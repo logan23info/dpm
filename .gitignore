@@ -1,1 +1,30 @@
-node_modules
+# Dependencies
+node_modules/
+.npm
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment files - NEVER commit these
+.env
+.env.local
+.env*.local
+.env.development
+.env.production
+
+# Vercel
+.vercel
+
+# Debug
+*.log
+npm-debug.log*
+
+# Misc
+.DS_Store
+*.zip
+*.pdf
+create-tables.js
+check-users.js
+create-users-table.js
