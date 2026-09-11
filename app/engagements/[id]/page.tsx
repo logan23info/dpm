@@ -125,6 +125,13 @@ export default function EngagementPage() {
               </div>
             </div>
             <div className="flex gap-2">
+              <a
+                href={`/api/engagements/${id}/export`}
+                download
+                className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition"
+              >
+                📊 Export Report
+              </a>
               <button
                 onClick={() => setShowImport(true)}
                 className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition"
