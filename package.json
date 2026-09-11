@@ -1,0 +1,22 @@
+{
+  "name": "rcm-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build:data": "node scripts/build-library.js && node scripts/sync-data.js",
+    "dev": "npm run build:data && vite",
+    "prebuild": "npm run build:data",
+    "build": "vite build",
+    "preview": "vite preview",
+    "validate": "node scripts/build-library.js"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0"
+  }
+}

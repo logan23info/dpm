@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RCM Control Library",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id", "framework", "clause_ref", "domain",
+      "control_objective", "control_description", "risk_addressed",
+      "inherent_risk", "key_control", "control_type", "control_nature", "frequency",
+      "test_of_design", "test_of_effectiveness", "population_basis", "sampling_basis",
+      "evidence_required", "owner", "status"
+    ],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[A-Z0-9]+-[A-Za-z0-9._-]+$" },
+      "framework": { "type": "string", "enum": ["ISO27701", "GDPR", "DPDP", "NISTPF", "SOC2"] },
+      "clause_ref": { "type": "string" },
+      "domain": {
+        "type": "string",
+        "enum": [
+          "Governance & Accountability",
+          "Notice & Transparency",
+          "Consent & Lawful Basis",
+          "Data Subject Rights",
+          "Data Minimization & Retention",
+          "Security of Processing",
+          "Third-Party & Processor Management",
+          "Cross-Border Transfers",
+          "Incident & Breach Management",
+          "Privacy by Design & Assessment",
+          "Training & Awareness"
+        ]
+      },
+      "control_objective": { "type": "string", "minLength": 20 },
+      "control_description": { "type": "string", "minLength": 30 },
+      "risk_addressed": { "type": "string", "minLength": 20 },
+      "inherent_risk": { "type": "string", "enum": ["High", "Medium", "Low"] },
+      "residual_risk": { "type": ["string", "null"], "enum": ["High", "Medium", "Low", null] },
+      "key_control": { "type": "boolean" },
+      "control_type": { "type": "string", "enum": ["Preventive", "Detective", "Corrective"] },
+      "control_nature": { "type": "string", "enum": ["Manual", "Automated", "IT-Dependent Manual"] },
+      "frequency": {
+        "type": "string",
+        "enum": ["Continuous", "Daily", "Weekly", "Monthly", "Quarterly", "Semi-Annual", "Annual", "Event-driven"]
+      },
+      "test_of_design": { "type": "string", "minLength": 20 },
+      "test_of_effectiveness": { "type": "string", "minLength": 20 },
+      "population_basis": { "type": "string" },
+      "sampling_basis": { "type": "string" },
+      "evidence_required": { "type": "string", "minLength": 10 },
+      "itgc_dependency": { "type": "array", "items": { "type": "string" } },
+      "cross_framework_refs": { "type": "array", "items": { "type": "string" } },
+      "owner": { "type": "string" },
+      "status": { "type": "string", "enum": ["Not Started", "In Progress", "Implemented", "Not Applicable"] },
+      "test_result": { "type": ["string", "null"], "enum": ["Effective", "Effective with Exceptions", "Ineffective", "Not Tested", null] },
+      "exceptions_noted": { "type": ["string", "null"] },
+      "conclusion": { "type": ["string", "null"] },
+      "gap_notes": { "type": ["string", "null"] },
+      "period_covered": { "type": ["string", "null"] },
+      "prepared_by": { "type": ["string", "null"] },
+      "reviewed_by": { "type": ["string", "null"] },
+      "last_reviewed": { "type": ["string", "null"], "format": "date" }
+    }
+  }
+}
