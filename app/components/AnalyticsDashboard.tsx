@@ -305,7 +305,7 @@ export default function AnalyticsDashboard({ engagementId }: { engagementId: str
                 <tr className="border-b border-slate-200">
                   <th className="text-left py-2 text-slate-500 font-medium">Domain</th>
                   <th className="text-center py-2 text-slate-500 font-medium">Controls</th>
-                  <th className="text-center py-2 text-slate-500 font-medium">Effective</th>
+                  
                   <th className="text-left py-2 text-slate-500 font-medium">Effectiveness</th>
                   <th className="text-center py-2 text-slate-500 font-medium">Rating</th>
                 </tr>
@@ -315,7 +315,7 @@ export default function AnalyticsDashboard({ engagementId }: { engagementId: str
                   <tr key={i} className="border-b border-slate-100">
                     <td className="py-3 font-medium text-slate-900">{d.domain}</td>
                     <td className="py-3 text-center text-slate-600">{d.total}</td>
-                    <td className="py-3 text-center text-slate-600">{d.effective}</td>
+                    
                     <td className="py-3 w-40">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-slate-100 rounded-full h-2">
