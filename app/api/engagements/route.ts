@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 export async function GET(req: NextRequest) {
   try {
     const result = await sql`
-      SELECT id, name, frameworks, period_start, period_end, status, created_at
+      SELECT id, title as name, frameworks, period_start, period_end, status, created_at
       FROM engagements
       ORDER BY created_at DESC
     `
@@ -25,9 +25,9 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await sql`
-      INSERT INTO engagements (name, frameworks, period_start, period_end)
-      VALUES (${name}, ${JSON.stringify(frameworks)}, ${period_start || null}, ${period_end || null})
-      RETURNING id, name, frameworks, period_start, period_end, status, created_at
+      INSERT INTO engagements (title, frameworks, period_start, period_end, status)
+      VALUES (${name}, ${JSON.stringify(frameworks)}, ${period_start || null}, ${period_end || null}, 'active')
+      RETURNING id, title as name, frameworks, period_start, period_end, status, created_at
     `
 
     return NextResponse.json(result.rows[0], { status: 201 })
