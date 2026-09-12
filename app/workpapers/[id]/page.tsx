@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import AuditAnalysis from "@/app/components/AuditAnalysis"
+import ReviewNotesPanel from "@/app/components/ReviewNotesPanel"
 import EvidencePanel from "@/app/components/EvidencePanel"
 import SignOffPanel from "@/app/components/SignOffPanel"
 
@@ -60,7 +61,7 @@ const CONTROL_NAMES: Record<string, string> = {
   "DPDP-7":  "Cross-Border Transfers",
 }
 
-type Tab = "details" | "evidence" | "analysis"
+type Tab = "details" | "evidence" | "notes" | "analysis"
 
 export default function WorkpaperPage() {
   const params = useParams()
@@ -235,14 +236,24 @@ export default function WorkpaperPage() {
           <EvidencePanel workpaperId={workpaper.id} />
         )}
 
+        {/* Review Notes Tab */}
+        {activeTab === "notes" && (
+          <ReviewNotesPanel
+            workpaperId={workpaper.id}
+            isLocked={!!workpaper.signed_off_at}
+          />
+        )}
+
         {/* AI Analysis Tab */}
         {activeTab === "analysis" && (
           <AuditAnalysis
             controlId={workpaper.control_id}
             controlName={controlName}
+            workpaperId={workpaper.id}
             testResult={workpaper.test_result}
             implementationStatus={workpaper.implementation_status}
             exceptions={workpaper.exceptions_noted}
+            isLocked={!!workpaper.signed_off_at}
           />
         )}
       </main>
