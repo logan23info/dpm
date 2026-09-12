@@ -38,9 +38,9 @@ export async function GET(
 
     const summary = {
       total: result.length,
-      inScope: result.filter(r => r.in_scope === true).length,
-      outOfScope: result.filter(r => r.in_scope === false).length,
-      unscoped: result.filter(r => r.in_scope === null).length,
+      inScope: (result as any[]).filter(r => r.in_scope === true).length,
+      outOfScope: (result as any[]).filter(r => r.in_scope === false).length,
+      unscoped: (result as any[]).filter(r => r.in_scope === null).length,
     }
 
     return NextResponse.json({ controls: result, summary })
