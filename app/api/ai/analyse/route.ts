@@ -1,150 +1,266 @@
-import { NextRequest, NextResponse } from "next/server"
+// app/api/ai/analyse/route.ts
+// TOD / TOE / TOI analysis — Advisory & Assurance modes
+// Grounded in the control library (lib/controls.ts) — authoritative source
+// Uses Anthropic Claude (same backend as api/gap-check.js and api/draft-control.js)
+// Env var: ANTHROPIC_API_KEY   Model: claude-sonnet-4-5 (or ANTHROPIC_MODEL)
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-const MODEL = "openai/gpt-oss-20b"
+import { NextRequest, NextResponse } from 'next/server'
+import controls from '@/lib/controls'
+import { sql } from '@vercel/postgres'
 
-// GDPR Authoritative Article Mapping (EUR-Lex source of truth)
-const GDPR_ARTICLES: Record<string, { article: string; title: string; url: string }> = {
-  "GDPR-1":  { article: "Art. 5",     title: "Principles relating to processing of personal data",     url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e1888-1-1" },
-  "GDPR-2":  { article: "Art. 6",     title: "Lawfulness of processing",                               url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e1888-1-1" },
-  "GDPR-3":  { article: "Art. 7",     title: "Conditions for consent",                                 url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e1888-1-1" },
-  "GDPR-4":  { article: "Art. 13-14", title: "Information to be provided",                             url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e2269-1-1" },
-  "GDPR-5":  { article: "Art. 15-22", title: "Rights of the data subject",                             url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e2369-1-1" },
-  "GDPR-6":  { article: "Art. 25",    title: "Data protection by design and by default",               url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3063-1-1" },
-  "GDPR-7":  { article: "Art. 28",    title: "Processor obligations",                                   url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3163-1-1" },
-  "GDPR-8":  { article: "Art. 30",    title: "Records of processing activities (RoPA)",                url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3209-1-1" },
-  "GDPR-9":  { article: "Art. 32",    title: "Security of processing",                                  url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3265-1-1" },
-  "GDPR-10": { article: "Art. 33-34", title: "Personal data breach notification",                      url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3313-1-1" },
-  "GDPR-11": { article: "Art. 35",    title: "Data Protection Impact Assessment (DPIA)",               url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3383-1-1" },
-  "GDPR-12": { article: "Art. 37-39", title: "Data Protection Officer (DPO)",                          url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3451-1-1" },
-  "GDPR-13": { article: "Art. 44-49", title: "Transfers to third countries",                           url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e3611-1-1" },
-  "GDPR-14": { article: "Art. 83",    title: "General conditions for imposing administrative fines",   url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679#d1e5402-1-1" },
-}
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'
+const MAX_INPUT = 20_000
 
-function buildSystemPrompt(mode: "advisory" | "assurance"): string {
-  if (mode === "advisory") {
-    return `You are a Data Protection Officer (DPO) and privacy compliance expert. 
-Your role is ADVISORY — you provide practical guidance, recommendations, and best practices.
-You help organisations understand what they SHOULD DO to comply with GDPR.
-Always cite the specific GDPR article, recital, and EDPB guidance where relevant.
-Be constructive, practical, and actionable. Use clear headings for TOD, TOE, TOI sections.
-Format your response with clear sections: ## Test of Design (TOD), ## Test of Effectiveness (TOE), ## Test of Implementation (TOI).
-Each section should have: **Objective**, **Key Questions**, **Recommendations**, **Red Flags**.`
+function buildSystemPrompt(mode: 'advisory' | 'assurance'): string {
+  if (mode === 'advisory') {
+    return `You are a Data Protection Officer (DPO) and privacy compliance expert providing ADVISORY guidance.
+
+Your role is to help organisations understand what they SHOULD DO to comply with the regulation.
+You must ground every recommendation in the authoritative regulatory text provided in the CONTROL LIBRARY CONTEXT block.
+Do not invent requirements. If you cite an article or section, it must be from the library context.
+
+Format your response with exactly these three sections:
+## Test of Design (TOD)
+**Objective** — what the design should achieve
+**Key Questions** — 3-5 specific questions to assess adequacy of design
+**Recommendations** — practical steps to improve or confirm the design
+**Red Flags** — signs the design is inadequate
+
+## Test of Effectiveness (TOE)
+**Objective** — what effectiveness means for this control
+**Key Questions** — 3-5 specific questions
+**Recommendations** — how to demonstrate and improve effectiveness
+**Red Flags** — signs the control is not operating as designed
+
+## Test of Implementation (TOI)
+**Objective** — what implemented means in practice
+**Key Questions** — 3-5 specific questions for a walkthrough
+**Evidence to Request** — specific documents, logs, or records (from library evidence_required)
+**Red Flags** — signs the control exists on paper but not in practice`
   }
 
-  return `You are a senior IT Auditor conducting formal assurance work under professional audit standards.
-Your role is ASSURANCE — you provide independent, objective audit opinions and conclusions.
-You assess whether controls ARE designed, operating, and implemented effectively.
-Always cite specific GDPR articles, EDPB guidelines, and audit evidence requirements.
+  return `You are a senior IT Auditor providing formal ASSURANCE conclusions under professional audit standards (IIA, ISA).
+
+Your role is to provide independent, objective audit assessments of whether this control is designed, operating, and implemented effectively.
+You must ground every conclusion and test procedure in the authoritative regulatory text provided in the CONTROL LIBRARY CONTEXT block.
+Use the library's test procedures as your starting point — enhance them with context-specific guidance.
 Be objective, evidence-based, and conclusive. Use formal audit language.
-Format your response with clear sections: ## Test of Design (TOD), ## Test of Effectiveness (TOE), ## Test of Implementation (TOI).
-Each section must include: **Audit Objective**, **Evidence Required**, **Testing Procedure**, **Possible Findings**, **Audit Conclusion**.`
+State whether sufficient appropriate evidence exists to support a conclusion.
+
+Format your response with exactly these three sections:
+## Test of Design (TOD)
+**Audit Objective** — what adequacy of design means for this control
+**Testing Procedure** — re-performable steps an auditor can execute (not restatements of the control)
+**Evidence Required** — specific documents, logs, records (reference library evidence_required)
+**Possible Findings** — deficiencies that may be noted
+**Audit Conclusion** — provisional opinion on design adequacy
+
+## Test of Effectiveness (TOE)
+**Audit Objective** — what effective operation means
+**Testing Procedure** — re-performable steps including sampling (reference library sampling_basis)
+**Evidence Required** — what to inspect, agree, or re-perform
+**Possible Findings** — exceptions and their implications
+**Audit Conclusion** — provisional opinion on operating effectiveness
+
+## Test of Implementation (TOI)
+**Audit Objective** — what implementation means in practice
+**Testing Procedure** — walkthrough steps, observation, enquiry
+**Evidence Required** — system outputs, configurations, records
+**Possible Findings** — implementation gaps
+**Audit Conclusion** — provisional opinion on implementation`
 }
 
 function buildUserPrompt(
-  controlId: string,
-  controlName: string,
-  gdprRef: { article: string; title: string; url: string } | undefined,
+  controlContext: string,
   testResult: string,
   implementationStatus: string,
   exceptions: string,
-  mode: "advisory" | "assurance"
+  mode: 'advisory' | 'assurance'
 ): string {
-  const gdprContext = gdprRef
-    ? `GDPR Reference: ${gdprRef.article} — ${gdprRef.title}\nAuthoritative Source: ${gdprRef.url}`
-    : "GDPR Reference: General data protection principles"
+  return `${controlContext}
 
-  return `Analyse the following control for GDPR compliance:
+CURRENT WORKPAPER ASSESSMENT
+Implementation Status: ${implementationStatus || 'Not assessed'}
+Test Result:          ${testResult || 'Not tested'}
+Exceptions Noted:     ${exceptions || 'None noted'}
 
-**Control ID**: ${controlId}
-**Control Name**: ${controlName}
-**${gdprContext}**
-
-**Current Assessment:**
-- Implementation Status: ${implementationStatus || "Not assessed"}
-- Test Result: ${testResult || "Not tested"}
-- Exceptions/Issues Noted: ${exceptions || "None noted"}
-
-${mode === "advisory"
-  ? "Provide advisory guidance with TOD, TOE, and TOI analysis. Focus on what this organisation should do to achieve and demonstrate compliance."
-  : "Provide formal assurance analysis with TOD, TOE, and TOI. Assess whether this control provides reasonable assurance of GDPR compliance. State clear audit conclusions."
+${mode === 'advisory'
+  ? 'Provide advisory guidance for the TOD, TOE, and TOI. Focus on what the organisation should do to achieve and demonstrate compliance with the regulation referenced above.'
+  : 'Provide formal assurance analysis for the TOD, TOE, and TOI. Assess whether this control provides reasonable assurance of compliance. State clear provisional conclusions for each test type. Use the library sampling basis to specify sample sizes.'
 }
 
-Be specific to GDPR ${gdprRef?.article || "requirements"} and cite EDPB guidelines where applicable.`
+Important: your output will be reviewed and dispositioned by a qualified auditor before it informs any workpaper conclusion. Be thorough — the auditor will judge whether to accept, modify, or reject your analysis.`
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { controlId, controlName, testResult, implementationStatus, exceptions, mode } = body
+    const {
+      controlId,
+      workpaperId,
+      testResult,
+      implementationStatus,
+      exceptions,
+      mode,
+      actorName,
+    } = body
 
     if (!controlId || !mode) {
-      return NextResponse.json({ error: "controlId and mode are required" }, { status: 400 })
+      return NextResponse.json(
+        { error: 'controlId and mode are required' },
+        { status: 400 }
+      )
     }
 
-    if (!["advisory", "assurance"].includes(mode)) {
-      return NextResponse.json({ error: "mode must be 'advisory' or 'assurance'" }, { status: 400 })
+    if (!['advisory', 'assurance'].includes(mode)) {
+      return NextResponse.json(
+        { error: "mode must be 'advisory' or 'assurance'" },
+        { status: 400 }
+      )
     }
 
-    const apiKey = process.env.DPM_Key
+    const apiKey = process.env.ANTHROPIC_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ error: "Groq API key not configured" }, { status: 500 })
+      return NextResponse.json(
+        { error: 'AI features not configured: ANTHROPIC_API_KEY is not set' },
+        { status: 500 }
+      )
     }
 
-    const gdprRef = GDPR_ARTICLES[controlId]
+    // Get control from library — this is the authoritative source
+    const control = controls.get(controlId)
+    const controlContext = controls.buildAiContext(controlId)
 
-    const response = await fetch(GROQ_API_URL, {
-      method: "POST",
+    // Call Anthropic
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: MODEL,
+        max_tokens: 2000,
+        system: buildSystemPrompt(mode as 'advisory' | 'assurance'),
         messages: [
           {
-            role: "system",
-            content: buildSystemPrompt(mode as "advisory" | "assurance"),
-          },
-          {
-            role: "user",
+            role: 'user',
             content: buildUserPrompt(
-              controlId,
-              controlName || controlId,
-              gdprRef,
-              testResult || "",
-              implementationStatus || "",
-              exceptions || "",
-              mode as "advisory" | "assurance"
+              controlContext,
+              testResult || '',
+              implementationStatus || '',
+              exceptions || '',
+              mode as 'advisory' | 'assurance'
             ),
           },
         ],
-        temperature: 0.3,
-        max_tokens: 2048,
-        stream: false,
       }),
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error("Groq API error:", error)
-      return NextResponse.json({ error: "AI analysis failed" }, { status: 500 })
+      const detail = await response.text()
+      console.error('Anthropic API error:', detail)
+      return NextResponse.json(
+        { error: `AI analysis failed: ${response.status}` },
+        { status: 500 }
+      )
     }
 
     const data = await response.json()
-    const analysis = data.choices?.[0]?.message?.content || ""
+    const block = (data.content || []).find((b: any) => b.type === 'text')
+    const analysis = block ? block.text.replace(/```json|```/g, '').trim() : ''
+
+    // Persist to ai_analyses table
+    let savedId: string | null = null
+    try {
+      const saved = await sql`
+        INSERT INTO ai_analyses (
+          workpaper_id, control_id, mode, analysis, model, created_at
+        ) VALUES (
+          ${workpaperId || null},
+          ${controlId},
+          ${mode},
+          ${analysis},
+          ${MODEL},
+          NOW()
+        )
+        RETURNING id
+      `
+      savedId = saved.rows[0]?.id
+    } catch (dbErr: any) {
+      // Non-fatal: AI still returns even if save fails
+      console.warn('Could not save ai_analysis to DB:', dbErr.message)
+    }
 
     return NextResponse.json({
+      id: savedId,
       analysis,
-      gdprRef: gdprRef || null,
+      control: control
+        ? {
+            id: control.id,
+            clause_ref: control.clause_ref,
+            domain: control.domain,
+            framework: control.framework,
+            control_objective: control.control_objective,
+            inherent_risk: control.inherent_risk,
+            key_control: control.key_control,
+            evidence_required: control.evidence_required,
+            sampling_basis: control.sampling_basis,
+            cross_framework_refs: control.cross_framework_refs,
+            authority_url: controls.getAuthorityUrl(controlId),
+            authority_citation: controls.getAuthorityCitation(controlId),
+          }
+        : null,
       model: MODEL,
       mode,
       controlId,
       timestamp: new Date().toISOString(),
     })
+  } catch (error: any) {
+    console.error('Analysis error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
 
-  } catch (error) {
-    console.error("Analysis error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+// Disposition endpoint — record auditor's decision on an AI analysis
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { id, disposition, modifiedText, auditorNote, dispositionedBy } = body
+
+    if (!id || !disposition) {
+      return NextResponse.json(
+        { error: 'id and disposition are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!['accepted', 'modified', 'rejected'].includes(disposition)) {
+      return NextResponse.json(
+        { error: "disposition must be 'accepted', 'modified', or 'rejected'" },
+        { status: 400 }
+      )
+    }
+
+    const result = await sql`
+      UPDATE ai_analyses SET
+        disposition       = ${disposition},
+        modified_text     = ${modifiedText || null},
+        auditor_note      = ${auditorNote || null},
+        dispositioned_by  = ${dispositionedBy || 'Unknown'},
+        dispositioned_at  = NOW()
+      WHERE id = ${id}
+      RETURNING id, disposition, dispositioned_by, dispositioned_at
+    `
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'Analysis not found' }, { status: 404 })
+    }
+
+    return NextResponse.json(result.rows[0])
+  } catch (error: any) {
+    console.error('Disposition error:', error)
+    return NextResponse.json({ error: 'Failed to record disposition' }, { status: 500 })
   }
 }
