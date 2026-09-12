@@ -9,14 +9,15 @@ export async function GET(req: NextRequest) {
       SELECT * FROM ropa_entries
       ORDER BY status ASC, name ASC
     `
+    const rows = result.rows as any[]
     const summary = {
-      total:         result.rows.length,
-      active:        result.rows.filter(r => r.status === 'active').length,
-      dpiaRequired:  result.rows.filter(r => r.dpia_required).length,
-      dpiaCompleted: result.rows.filter(r => r.dpia_completed).length,
-      transfers:     result.rows.filter(r => r.third_country_transfers).length,
+      total:         rows.length,
+      active:        rows.filter(r => r.status === 'active').length,
+      dpiaRequired:  rows.filter(r => r.dpia_required).length,
+      dpiaCompleted: rows.filter(r => r.dpia_completed).length,
+      transfers:     rows.filter(r => r.third_country_transfers).length,
     }
-    return NextResponse.json({ entries: result.rows, summary })
+    return NextResponse.json({ entries: rows, summary })
   } catch (error) {
     console.error('GET RoPA error:', error)
     return NextResponse.json({ error: 'Failed to fetch RoPA' }, { status: 500 })

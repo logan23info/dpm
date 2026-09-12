@@ -26,17 +26,18 @@ export async function GET(
         due_date ASC NULLS LAST
     `
 
+    const rows = result.rows as any[]
     const summary = {
-      total:       result.rows.length,
-      outstanding: result.rows.filter(r => r.status === 'outstanding').length,
-      partial:     result.rows.filter(r => r.status === 'partial').length,
-      received:    result.rows.filter(r => r.status === 'received').length,
-      overdue:     result.rows.filter(r =>
+      total:       rows.length,
+      outstanding: rows.filter(r => r.status === 'outstanding').length,
+      partial:     rows.filter(r => r.status === 'partial').length,
+      received:    rows.filter(r => r.status === 'received').length,
+      overdue:     rows.filter(r =>
         r.status === 'outstanding' && r.due_date && new Date(r.due_date) < new Date()
       ).length,
     }
 
-    return NextResponse.json({ items: result.rows, summary })
+    return NextResponse.json({ items: rows, summary })
   } catch (error) {
     console.error('GET PBC error:', error)
     return NextResponse.json({ error: 'Failed to fetch PBC' }, { status: 500 })

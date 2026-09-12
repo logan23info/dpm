@@ -30,12 +30,13 @@ export async function GET(req: NextRequest) {
         : null,
     }))
 
+    const anyEnriched = enriched as any[]
     const summary = {
-      total:     enriched.length,
-      open:      enriched.filter(b => b.status === 'open').length,
-      overdue:   enriched.filter(b => b.timeline?.isOverdue).length,
-      urgent:    enriched.filter(b => b.timeline?.isUrgent).length,
-      notified:  enriched.filter(b => b.sa_notified_at).length,
+      total:     anyEnriched.length,
+      open:      anyEnriched.filter(b => b.status === 'open').length,
+      overdue:   anyEnriched.filter(b => b.timeline?.isOverdue).length,
+      urgent:    anyEnriched.filter(b => b.timeline?.isUrgent).length,
+      notified:  anyEnriched.filter(b => b.sa_notified_at).length,
     }
 
     return NextResponse.json({ breaches: enriched, summary })
