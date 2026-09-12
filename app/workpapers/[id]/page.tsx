@@ -97,21 +97,21 @@ export default function WorkpaperPage() {
 
   const startEdit = () => {
     setEditForm({
-      implementation_status: workpaper.implementation_status || '',
-      test_result: workpaper.test_result || '',
-      residual_risk: workpaper.residual_risk || '',
-      exceptions_noted: workpaper.exceptions_noted || '',
-      conclusion: workpaper.conclusion || '',
+      implementation_status: workpaper!.implementation_status || '',
+      test_result: workpaper!.test_result || '',
+      residual_risk: workpaper!.residual_risk || '',
+      exceptions_noted: workpaper!.exceptions_noted || '',
+      conclusion: workpaper!.conclusion || '',
     })
     setActiveTab('edit')
   }
 
   const saveEdit = async () => {
-    if (!editForm) return
+    if (!editForm || !workpaper) return
     setEditSaving(true)
     setEditError("")
     try {
-      const res = await fetch(\`/api/workpapers/\${workpaper.id}\`, {
+      const res = await fetch(`/api/workpapers/${workpaper.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', ...actorHeaders },
         body: JSON.stringify(editForm),
@@ -156,6 +156,14 @@ export default function WorkpaperPage() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400">v{workpaper.version}</span>
+              {!workpaper.signed_off_at && (
+                <button
+                  onClick={startEdit}
+                  className="text-xs px-3 py-1 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition font-medium"
+                >
+                  ✏️ Edit
+                </button>
+              )}
               {workpaper.signed_off_at ? (
                 <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full font-medium">✓ Signed Off</span>
               ) : (
@@ -171,12 +179,17 @@ export default function WorkpaperPage() {
         <div className="flex gap-4 border-b border-slate-200 mb-6">
           {([
             { key: "details",  label: "📋 Details" },
+            { key: "edit",     label: "✏️ Edit" },
             { key: "evidence", label: "📎 Evidence" },
+            { key: "notes",    label: "📝 Review Notes" },
             { key: "analysis", label: "🤖 AI Analysis" },
           ] as { key: Tab; label: string }[]).map(t => (
             <button
               key={t.key}
-              onClick={() => setActiveTab(t.key)}
+              onClick={() => {
+                if (t.key === 'edit' && !workpaper.signed_off_at) startEdit()
+                else setActiveTab(t.key)
+              }}
               className={`pb-3 text-sm font-medium border-b-2 transition ${
                 activeTab === t.key
                   ? "border-amber-500 text-amber-600"
@@ -194,11 +207,9 @@ export default function WorkpaperPage() {
         {/* Details Tab */}
         {activeTab === "details" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Workpaper Fields */}
             <div className="space-y-4">
               <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
                 <h2 className="font-bold text-slate-900">Control Assessment</h2>
-
                 {[
                   { label: "Implementation Status", value: workpaper.implementation_status },
                   { label: "Test Result", value: workpaper.test_result },
@@ -217,7 +228,6 @@ export default function WorkpaperPage() {
                     </div>
                   </div>
                 ))}
-
                 {workpaper.exceptions_noted && (
                   <div>
                     <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Exceptions Noted</label>
@@ -226,7 +236,6 @@ export default function WorkpaperPage() {
                     </p>
                   </div>
                 )}
-
                 {workpaper.conclusion && (
                   <div>
                     <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Conclusion</label>
@@ -236,8 +245,6 @@ export default function WorkpaperPage() {
                   </div>
                 )}
               </div>
-
-              {/* GDPR Quick Reference */}
               <div className="bg-white rounded-xl border border-slate-200 p-5">
                 <h3 className="font-semibold text-slate-900 mb-3">📜 Regulatory References</h3>
                 <div className="space-y-2 text-sm">
@@ -255,8 +262,6 @@ export default function WorkpaperPage() {
                 </div>
               </div>
             </div>
-
-            {/* Sign-Off */}
             <div>
               <SignOffPanel
                 workpaperId={workpaper.id}
@@ -287,8 +292,8 @@ export default function WorkpaperPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">{f.label}</label>
                 <select value={editForm[f.key] || ''}
                   onChange={e => setEditForm((p: any) => ({ ...p, [f.key]: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 capitalize">
-                  {f.opts.map(o => <option key={o} value={o} className="capitalize">{o || 'Select...'}</option>)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  {f.opts.map(o => <option key={o} value={o}>{o || 'Select...'}</option>)}
                 </select>
               </div>
             ))}
