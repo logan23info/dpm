@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import ImportFindingsModal from "@/app/components/ImportFindingsModal"
+import BulkWorkpaperModal from "@/app/components/BulkWorkpaperModal"
 import AnalyticsDashboard from "@/app/components/AnalyticsDashboard"
 
 interface Workpaper {
@@ -60,6 +61,7 @@ export default function EngagementPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>("workpapers")
   const [showImport, setShowImport] = useState(false)
+  const [showBulk, setShowBulk] = useState(false)
 
   useEffect(() => { if (id) fetchAll() }, [id])
 
@@ -98,6 +100,32 @@ export default function EngagementPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
+      {/* Bulk Workpaper Modal */}
+      {showBulk && (
+        <BulkWorkpaperModal
+          engagementId={id}
+          onClose={() => setShowBulk(false)}
+          onComplete={() => {
+            setShowBulk(false)
+            setActiveTab("workpapers")
+            fetchAll()
+          }}
+        />
+      )}
+
+      {/* Bulk Workpaper Modal */}
+      {showBulk && (
+        <BulkWorkpaperModal
+          engagementId={id}
+          onClose={() => setShowBulk(false)}
+          onComplete={() => {
+            setShowBulk(false)
+            setActiveTab("workpapers")
+            fetchAll()
+          }}
+        />
+      )}
+
       {/* Import Modal */}
       {showImport && (
         <ImportFindingsModal
@@ -125,6 +153,30 @@ export default function EngagementPage() {
               </div>
             </div>
             <div className="flex gap-2">
+              <Link
+                href="/cross-framework"
+                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition"
+              >
+                🗺️ Framework Map
+              </Link>
+              <button
+                onClick={() => setShowBulk(true)}
+                className="px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition"
+              >
+                ⚡ Bulk Create
+              </button>
+              <Link
+                href="/cross-framework"
+                className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition"
+              >
+                🗺️ Framework Map
+              </Link>
+              <button
+                onClick={() => setShowBulk(true)}
+                className="px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition"
+              >
+                ⚡ Bulk Create
+              </button>
               <a
                 href={`/api/engagements/${id}/export`}
                 download
