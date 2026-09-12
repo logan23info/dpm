@@ -55,6 +55,14 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">RCM Studio</h1>
+            </div>
+            <div className="flex gap-2">
+              <a href="/privacy" className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                🛡️ Privacy Hub
+              </a>
+              <a href="/cross-framework" className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition">
+                🗺️ Framework Map
+              </a>
               <p className="text-slate-600 mt-1">Privacy & Data Protection Audit Platform</p>
             </div>
           </div>
