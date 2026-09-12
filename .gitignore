@@ -7,7 +7,7 @@ node_modules/
 out/
 build/
 
-# Environment - NEVER commit
+# Environment — NEVER commit
 .env
 .env.local
 .env*.local
@@ -17,14 +17,23 @@ build/
 # Vercel
 .vercel
 
-# Debug
+# Debug + logs
 *.log
 npm-debug.log*
 
-# Misc
+# OS
 .DS_Store
-*.zip
-*.pdf
+Thumbs.db
+
+# Dev scripts (not for production)
 check-users.js
 create-users-table.js
 create-tables.js
+migrate-*.js
+sprint*-migrate.js
+patch-*.py
+
+# Uploads / temp
+*.zip
+*.pdf
+*.backup.gz
