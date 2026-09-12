@@ -1,15 +1,15 @@
 // app/api/ai/analyse/route.ts
 // TOD / TOE / TOI analysis — Advisory & Assurance modes
 // Grounded in the control library (lib/controls.ts) — authoritative source
-// Uses Anthropic Claude (same backend as api/gap-check.js and api/draft-control.js)
-// Env var: ANTHROPIC_API_KEY   Model: claude-sonnet-4-5 (or ANTHROPIC_MODEL)
+
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import controls from '@/lib/controls'
 import { sql } from '@vercel/postgres'
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'
-const MAX_INPUT = 20_000
+const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-20b'
+
 
 function buildSystemPrompt(mode: 'advisory' | 'assurance'): string {
   if (mode === 'advisory') {
@@ -119,10 +119,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
+    const apiKey = process.env.DPM_Key
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'AI features not configured: ANTHROPIC_API_KEY is not set' },
+        { error: 'AI features not configured: DPM_Key is not set' },
         { status: 500 }
       )
     }
@@ -131,19 +131,22 @@ export async function POST(req: NextRequest) {
     const control = controls.get(controlId)
     const controlContext = controls.buildAiContext(controlId)
 
-    // Call Anthropic
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call Groq
+    const response = await fetch(GROQ_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 2000,
-        system: buildSystemPrompt(mode as 'advisory' | 'assurance'),
+        temperature: 0.3,
         messages: [
+          {
+            role: 'system',
+            content: buildSystemPrompt(mode as 'advisory' | 'assurance'),
+          },
           {
             role: 'user',
             content: buildUserPrompt(
@@ -160,7 +163,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const detail = await response.text()
-      console.error('Anthropic API error:', detail)
+      console.error('Groq API error:', detail)
       return NextResponse.json(
         { error: `AI analysis failed: ${response.status}` },
         { status: 500 }
@@ -168,8 +171,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json()
-    const block = (data.content || []).find((b: any) => b.type === 'text')
-    const analysis = block ? block.text.replace(/```json|```/g, '').trim() : ''
+    const analysis = (data.choices?.[0]?.message?.content || '').replace(/```json|```/g, '').trim()
 
     // Persist to ai_analyses table
     let savedId: string | null = null
