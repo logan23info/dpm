@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useActor } from '@/app/components/SessionBanner'
-import controls from '@/lib/controls'
 
 interface ControlInfo {
   id: string

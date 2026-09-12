@@ -156,8 +156,8 @@ export function useActor() {
       .catch(() => {})
   }, [])
 
-  // Returns headers to attach to every fetch call
-  const actorHeaders = actor
+  // Returns headers to attach to every fetch call — always Record<string, string>
+  const actorHeaders: Record<string, string> = actor
     ? {
         'x-actor-name': actor.name,
         'x-actor-role': actor.role,
