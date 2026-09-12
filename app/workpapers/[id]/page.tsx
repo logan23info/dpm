@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import AuditAnalysis from "@/app/components/AuditAnalysis"
+import { useActor } from "@/app/components/SessionBanner"
 import ReviewNotesPanel from "@/app/components/ReviewNotesPanel"
 import EvidencePanel from "@/app/components/EvidencePanel"
 import SignOffPanel from "@/app/components/SignOffPanel"
@@ -61,7 +62,7 @@ const CONTROL_NAMES: Record<string, string> = {
   "DPDP-7":  "Cross-Border Transfers",
 }
 
-type Tab = "details" | "evidence" | "notes" | "analysis"
+type Tab = "details" | "edit" | "evidence" | "notes" | "analysis"
 
 export default function WorkpaperPage() {
   const params = useParams()
@@ -69,7 +70,11 @@ export default function WorkpaperPage() {
 
   const [workpaper, setWorkpaper] = useState<Workpaper | null>(null)
   const [loading, setLoading] = useState(true)
+  const { actorHeaders } = useActor()
   const [activeTab, setActiveTab] = useState<Tab>("details")
+  const [editForm, setEditForm] = useState<any>(null)
+  const [editSaving, setEditSaving] = useState(false)
+  const [editError, setEditError] = useState("")
 
   useEffect(() => { if (id) fetchWorkpaper() }, [id])
 
@@ -89,6 +94,38 @@ export default function WorkpaperPage() {
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
     </div>
   )
+
+  const startEdit = () => {
+    setEditForm({
+      implementation_status: workpaper.implementation_status || '',
+      test_result: workpaper.test_result || '',
+      residual_risk: workpaper.residual_risk || '',
+      exceptions_noted: workpaper.exceptions_noted || '',
+      conclusion: workpaper.conclusion || '',
+    })
+    setActiveTab('edit')
+  }
+
+  const saveEdit = async () => {
+    if (!editForm) return
+    setEditSaving(true)
+    setEditError("")
+    try {
+      const res = await fetch(\`/api/workpapers/\${workpaper.id}\`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...actorHeaders },
+        body: JSON.stringify(editForm),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setEditError(data.error || 'Failed to save')
+        return
+      }
+      setWorkpaper(prev => prev ? { ...prev, ...data } : prev)
+      setActiveTab('details')
+      setEditForm(null)
+    } finally { setEditSaving(false) }
+  }
 
   if (!workpaper) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -228,6 +265,59 @@ export default function WorkpaperPage() {
                 onUpdate={(data) => setWorkpaper(prev => prev ? { ...prev, ...data } : prev)}
               />
             </div>
+          </div>
+        )}
+
+        {/* Edit Tab */}
+        {activeTab === "edit" && !workpaper.signed_off_at && editForm && (
+          <div className="bg-white rounded-xl border border-amber-300 p-6 space-y-4">
+            <h2 className="font-bold text-slate-900">Edit Workpaper Assessment</h2>
+            {editError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{editError}</div>
+            )}
+            {[
+              { key: 'implementation_status', label: 'Implementation Status',
+                opts: ['', 'implemented', 'partial', 'not-implemented', 'not-applicable'] },
+              { key: 'test_result', label: 'Test Result',
+                opts: ['', 'effective', 'partial', 'ineffective', 'not-tested'] },
+              { key: 'residual_risk', label: 'Residual Risk',
+                opts: ['', 'low', 'medium', 'high', 'critical'] },
+            ].map(f => (
+              <div key={f.key}>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{f.label}</label>
+                <select value={editForm[f.key] || ''}
+                  onChange={e => setEditForm((p: any) => ({ ...p, [f.key]: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 capitalize">
+                  {f.opts.map(o => <option key={o} value={o} className="capitalize">{o || 'Select...'}</option>)}
+                </select>
+              </div>
+            ))}
+            {['exceptions_noted', 'conclusion'].map(field => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-slate-700 mb-1 capitalize">
+                  {field.replace('_', ' ')}
+                </label>
+                <textarea rows={3} value={editForm[field] || ''}
+                  onChange={e => setEditForm((p: any) => ({ ...p, [field]: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+            ))}
+            <div className="flex gap-3 pt-2">
+              <button onClick={saveEdit} disabled={editSaving}
+                className="flex-1 bg-amber-600 text-white font-medium py-2.5 rounded-lg hover:bg-amber-700 disabled:opacity-50 transition">
+                {editSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button onClick={() => { setEditForm(null); setActiveTab('details') }}
+                className="px-4 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+        {activeTab === "edit" && workpaper.signed_off_at && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+            <p className="text-amber-800 font-medium">🔒 This workpaper is signed off and locked.</p>
+            <p className="text-sm text-amber-600 mt-1">Revert sign-off to edit.</p>
           </div>
         )}
 

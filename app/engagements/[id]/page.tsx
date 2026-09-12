@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import ImportFindingsModal from "@/app/components/ImportFindingsModal"
+import { useActor } from "@/app/components/SessionBanner"
 import BulkWorkpaperModal from "@/app/components/BulkWorkpaperModal"
 import AnalyticsDashboard from "@/app/components/AnalyticsDashboard"
 
@@ -61,9 +62,19 @@ export default function EngagementPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>("workpapers")
   const [showImport, setShowImport] = useState(false)
+  const { actorHeaders } = useActor()
   const [showBulk, setShowBulk] = useState(false)
 
   useEffect(() => { if (id) fetchAll() }, [id])
+
+  const updateFindingStatus = async (findingId: string, action: string, extra?: object) => {
+    await fetch(`/api/findings/${findingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...actorHeaders },
+      body: JSON.stringify({ action, ...extra }),
+    })
+    fetchAll()
+  }
 
   const fetchAll = async () => {
     try {
@@ -394,13 +405,31 @@ export default function EngagementPage() {
                         <p className="text-sm text-slate-500 mt-1 line-clamp-2">{f.description}</p>
                       )}
                     </div>
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex gap-2 ml-4 flex-wrap justify-end">
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[f.severity] || "bg-slate-100"}`}>
                         {f.severity}
                       </span>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[f.status] || "bg-slate-100"}`}>
                         {f.status}
                       </span>
+                      {f.status === 'open' && (
+                        <button onClick={() => updateFindingStatus(f.id, 'management_response', { management_response: 'agreed', status: 'in-progress' })}
+                          className="text-xs px-2 py-1 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">
+                          Accept →
+                        </button>
+                      )}
+                      {f.status === 'in-progress' && (
+                        <button onClick={() => updateFindingStatus(f.id, 'remediate')}
+                          className="text-xs px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                          Remediated →
+                        </button>
+                      )}
+                      {f.status === 'remediated' && (
+                        <button onClick={() => updateFindingStatus(f.id, 'retest', { retest_result: 'passed' })}
+                          className="text-xs px-2 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                          ✓ Close
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
