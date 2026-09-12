@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import AuditAnalysis from "@/app/components/AuditAnalysis"
+import controls from "@/lib/controls"
 import { useActor } from "@/app/components/SessionBanner"
 import ReviewNotesPanel from "@/app/components/ReviewNotesPanel"
 import EvidencePanel from "@/app/components/EvidencePanel"
@@ -38,29 +39,7 @@ const STATUS_COLORS: Record<string, string> = {
   critical: "bg-red-100 text-red-800",
 }
 
-const CONTROL_NAMES: Record<string, string> = {
-  "GDPR-1":  "Data Retention & Storage Limitation",
-  "GDPR-2":  "Lawful Basis for Processing",
-  "GDPR-3":  "Consent Management",
-  "GDPR-4":  "Privacy Notice & Transparency",
-  "GDPR-5":  "Data Subject Rights",
-  "GDPR-6":  "Privacy by Design & Default",
-  "GDPR-7":  "Data Processing Agreements",
-  "GDPR-8":  "Records of Processing Activities (RoPA)",
-  "GDPR-9":  "Technical & Organisational Security Measures",
-  "GDPR-10": "Breach Detection & Notification",
-  "GDPR-11": "Data Protection Impact Assessment (DPIA)",
-  "GDPR-12": "Data Protection Officer (DPO)",
-  "GDPR-13": "International Data Transfers",
-  "GDPR-14": "Compliance & Enforcement",
-  "DPDP-1":  "Consent — Data Principal",
-  "DPDP-2":  "Notice & Transparency",
-  "DPDP-3":  "Data Principal Rights",
-  "DPDP-4":  "Security Safeguards",
-  "DPDP-5":  "Data Processor Management",
-  "DPDP-6":  "Significant Data Fiduciary Obligations",
-  "DPDP-7":  "Cross-Border Transfers",
-}
+// Control names sourced from lib/controls
 
 type Tab = "details" | "edit" | "evidence" | "notes" | "analysis"
 
@@ -136,7 +115,10 @@ export default function WorkpaperPage() {
     </div>
   )
 
-  const controlName = CONTROL_NAMES[workpaper.control_id] || workpaper.control_id
+  const ctrl = controls.get(workpaper.control_id)
+  const controlName = ctrl?.control_objective || workpaper.control_id
+  const controlClause = ctrl?.clause_ref || ""
+  const controlAuthority = ctrl ? controls.getAuthorityUrl(workpaper.control_id) : ""
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -152,6 +134,10 @@ export default function WorkpaperPage() {
               <div>
                 <h1 className="text-xl font-bold text-slate-900">{workpaper.control_id}</h1>
                 <p className="text-sm text-slate-500">{controlName}</p>
+                {controlClause && (
+                  <a href={controlAuthority} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-blue-500 hover:underline">{controlClause} →</a>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3">
