@@ -90,11 +90,11 @@ export const keyControls = (fw?: string): Control[] =>
 
 /** All unique domains across all frameworks */
 export const domains = (): string[] =>
-  [...new Set(ALL_CONTROLS.map(c => c.domain))].sort()
+  Array.from(new Set(ALL_CONTROLS.map(c => c.domain))).sort()
 
 /** All unique frameworks */
 export const frameworks = (): string[] =>
-  [...new Set(ALL_CONTROLS.map(c => c.framework))]
+  Array.from(new Set(ALL_CONTROLS.map(c => c.framework)))
 
 /** Cross-framework controls that map to a given control ID */
 export const getMappings = (id: string): Control[] => {

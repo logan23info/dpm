@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import controls from '@/lib/controls'
 import { sql } from '@vercel/postgres'
 
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-20b'
 
 
