@@ -64,6 +64,12 @@ export default function EngagementPage() {
   const [showImport, setShowImport] = useState(false)
   const { actorHeaders } = useActor()
   const [showBulk, setShowBulk] = useState(false)
+  const [contradictions, setContradictions] = useState<any[]>([])
+  const [contradictionSummary, setContradictionSummary] = useState<any>(null)
+  const [checkingContradictions, setCheckingContradictions] = useState(false)
+  const [showAISummary, setShowAISummary] = useState(false)
+  const [aiSummary, setAiSummary] = useState<string>('')
+  const [generatingSummary, setGeneratingSummary] = useState(false)
 
   useEffect(() => { if (id) fetchAll() }, [id])
 
@@ -74,6 +80,33 @@ export default function EngagementPage() {
       body: JSON.stringify({ action, ...extra }),
     })
     fetchAll()
+  }
+
+  const runContradictionCheck = async () => {
+    setCheckingContradictions(true)
+    try {
+      const res = await fetch(`/api/engagements/${id}/contradiction-check`)
+      if (res.ok) {
+        const data = await res.json()
+        setContradictions(data.contradictions)
+        setContradictionSummary(data.summary)
+        setActiveTab('analytics')
+      }
+    } finally { setCheckingContradictions(false) }
+  }
+
+  const generateAISummary = async () => {
+    setGeneratingSummary(true)
+    setShowAISummary(true)
+    try {
+      const res = await fetch(`/api/engagements/${id}/ai-summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...actorHeaders },
+      })
+      const data = await res.json()
+      if (res.ok) setAiSummary(data.summary)
+      else setAiSummary(`Error: ${data.error}`)
+    } finally { setGeneratingSummary(false) }
   }
 
   const fetchAll = async () => {
@@ -260,6 +293,20 @@ export default function EngagementPage() {
               >
                 ⚡ Bulk Create
               </button>
+              <button
+                onClick={runContradictionCheck}
+                disabled={checkingContradictions}
+                className="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 disabled:opacity-50 transition"
+              >
+                {checkingContradictions ? '⏳ Checking...' : '⚠️ Check Quality'}
+              </button>
+              <button
+                onClick={generateAISummary}
+                disabled={generatingSummary}
+                className="px-4 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition"
+              >
+                {generatingSummary ? '⏳ Drafting...' : '✍️ AI Summary'}
+              </button>
               <a
                 href={`/api/engagements/${id}/export`}
                 download
@@ -440,7 +487,80 @@ export default function EngagementPage() {
 
         {/* Analytics Tab */}
         {activeTab === "analytics" && (
-          <div className="pb-10">
+          <div className="pb-10 space-y-6">
+
+            {/* AI Executive Summary */}
+            {showAISummary && (
+              <div className="bg-violet-50 border border-violet-200 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-violet-900">✍️ AI Executive Summary</h3>
+                  <button onClick={() => setShowAISummary(false)} className="text-violet-400 hover:text-violet-600 text-lg">×</button>
+                </div>
+                {generatingSummary ? (
+                  <div className="flex items-center gap-2 text-violet-700">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-violet-600 border-t-transparent" />
+                    Generating executive summary...
+                  </div>
+                ) : (
+                  <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none">
+                    {aiSummary.split(/##\s+/).filter(Boolean).map((section, i) => {
+                      const [title, ...lines] = section.split('
+')
+                      return (
+                        <div key={i} className="mb-4">
+                          <h4 className="font-bold text-slate-900 mb-1">{title.trim()}</h4>
+                          <p className="text-slate-700">{lines.join('
+').trim()}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                <p className="text-xs text-violet-400 mt-3">⚠️ AI-generated — review before presenting to audit committee</p>
+              </div>
+            )}
+
+            {/* Contradiction Check Results */}
+            {contradictionSummary && (
+              <div className={`rounded-xl border p-5 ${
+                contradictionSummary.errors > 0 ? 'border-red-300 bg-red-50'
+                : contradictionSummary.warnings > 0 ? 'border-amber-300 bg-amber-50'
+                : 'border-green-300 bg-green-50'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`font-bold ${
+                    contradictionSummary.errors > 0 ? 'text-red-900'
+                    : contradictionSummary.warnings > 0 ? 'text-amber-900'
+                    : 'text-green-900'
+                  }`}>
+                    {contradictionSummary.errors > 0 ? '❌ Quality Issues Found'
+                    : contradictionSummary.warnings > 0 ? '⚠️ Warnings Found'
+                    : '✅ No Contradictions Detected'}
+                  </h3>
+                  <div className="flex gap-3 text-xs">
+                    <span className="text-red-700 font-medium">{contradictionSummary.errors} errors</span>
+                    <span className="text-amber-700 font-medium">{contradictionSummary.warnings} warnings</span>
+                    <span className="text-green-700">{contradictionSummary.clean}/{contradictionSummary.total} clean</span>
+                  </div>
+                </div>
+                {contradictions.length > 0 && (
+                  <div className="space-y-2">
+                    {contradictions.map((c, i) => (
+                      <div key={i} className={`flex items-start gap-3 p-3 rounded-lg border ${
+                        c.severity === 'error' ? 'bg-white border-red-200' : 'bg-white border-amber-200'
+                      }`}>
+                        <span className="text-sm">{c.severity === 'error' ? '❌' : '⚠️'}</span>
+                        <div>
+                          <span className="text-xs font-bold text-slate-700">{c.control_id}</span>
+                          <p className="text-xs text-slate-600 mt-0.5">{c.message}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <AnalyticsDashboard engagementId={id} />
           </div>
         )}
