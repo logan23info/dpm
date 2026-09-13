@@ -335,6 +335,5 @@ export default function BreachRegisterPage() {
         )}
       </main>
     </div>
-  </div>
   )
 }
