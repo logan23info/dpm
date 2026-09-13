@@ -79,9 +79,11 @@ export default function PBCPage() {
       const data = await res.json()
       if (res.ok) {
         fetchPBC()
-        alert(`✅ ${data.message}`)
+        alert('✅ ' + data.message)
+      } else if (data.error && data.error.includes('No in-scope')) {
+        alert('⚠️ No in-scope controls found. Please complete Scoping first before generating PBC items.')
       } else {
-        alert(`❌ ${data.error}`)
+        alert('❌ ' + data.error)
       }
     } finally { setGenerating(false) }
   }
