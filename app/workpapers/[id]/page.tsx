@@ -57,7 +57,6 @@ export default function WorkpaperPage() {
   const [draftingFinding, setDraftingFinding] = useState(false)
   const [savingFinding, setSavingFinding] = useState(false)
   const [showRef, setShowRef] = useState(false)
-  const [showRef, setShowRef] = useState(false)
 
   useEffect(() => { if (id) fetchWorkpaper() }, [id])
 
