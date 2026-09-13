@@ -49,6 +49,7 @@ export default function NewEngagementPage() {
 
       const engagement = await res.json()
       router.push(`/engagements/${engagement.id}`)
+      router.refresh()
     } catch (err) {
       setError("Network error. Please try again.")
     } finally {
