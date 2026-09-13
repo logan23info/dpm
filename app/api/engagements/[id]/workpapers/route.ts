@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { sql } from "@vercel/postgres"
 import { NextRequest, NextResponse } from "next/server"
 
