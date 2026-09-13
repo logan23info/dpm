@@ -14,12 +14,7 @@ interface Breach {
   sa_notification_required: boolean
   sa_notified_at: string | null
   estimated_individuals: number | null
-  timeline: {
-    deadline72h: string
-    hoursRemaining: number
-    isOverdue: boolean
-    isUrgent: boolean
-  } | null
+  timeline: BreachTimeline | null
 }
 
 interface Summary {
@@ -44,39 +39,28 @@ const STATUS_COLORS: Record<string, string> = {
   closed:    'bg-green-100 text-green-800',
 }
 
-function Clock72h({ timeline }: { timeline: NonNullable<Breach['timeline']> }) {
-  const pct = Math.max(0, Math.min(100, (timeline.hoursRemaining / 72) * 100))
-  const color = timeline.isOverdue ? 'bg-red-500'
-    : timeline.isUrgent ? 'bg-orange-500'
-    : 'bg-green-500'
+type BreachTimeline = { deadline72h: string; hoursRemaining: number; isOverdue: boolean; isUrgent: boolean }
 
+function Clock72h({ timeline }: { timeline: BreachTimeline }) {
+  const pct    = Math.max(0, Math.min(100, (timeline.hoursRemaining / 72) * 100))
+  const bar    = timeline.isOverdue ? 'bg-red-500' : timeline.isUrgent ? 'bg-orange-500' : 'bg-green-500'
+  const border = timeline.isOverdue ? 'border-red-300 bg-red-50' : timeline.isUrgent ? 'border-orange-300 bg-orange-50' : 'border-blue-200 bg-blue-50'
+  const txt    = timeline.isOverdue ? 'text-red-700' : timeline.isUrgent ? 'text-orange-700' : 'text-blue-700'
+  const label  = timeline.isOverdue ? (Math.abs(timeline.hoursRemaining) + 'h OVERDUE') : (timeline.hoursRemaining + 'h remaining')
   return (
-    <div className={`rounded-lg border p-3 ${
-      timeline.isOverdue ? 'border-red-300 bg-red-50'
-      : timeline.isUrgent ? 'border-orange-300 bg-orange-50'
-      : 'border-blue-200 bg-blue-50'
-    }`}>
+    <div className={"rounded-lg border p-3 " + border}>
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs font-semibold text-slate-600">72h SA Notification</span>
-        <span className={`text-xs font-bold ${
-          timeline.isOverdue ? 'text-red-700' : timeline.isUrgent ? 'text-orange-700' : 'text-blue-700'
-        }`}>
-          {timeline.isOverdue
-            ? `${Math.abs(timeline.hoursRemaining)}h OVERDUE`
-            : `${timeline.hoursRemaining}h remaining`
-          }
-        </span>
+        <span className={"text-xs font-bold " + txt}>{label}</span>
       </div>
       <div className="w-full bg-slate-200 rounded-full h-2">
-        <div className={`h-2 rounded-full transition-all ${color}`}
-          style={{ width: `${pct}%` }} />
+        <div className={"h-2 rounded-full transition-all " + bar} style={{ width: pct + "%" }} />
       </div>
-      <p className="text-xs text-slate-500 mt-1">
-        Deadline: {new Date(timeline.deadline72h).toLocaleString('en-GB')}
-      </p>
+      <p className="text-xs text-slate-500 mt-1">Deadline: {new Date(timeline.deadline72h).toLocaleString('en-GB')}</p>
     </div>
   )
 }
+
 
 export default function BreachRegisterPage() {
   const { actorHeaders } = useActor()
@@ -283,11 +267,7 @@ export default function BreachRegisterPage() {
           </div>
         ) : (
           breaches.map(b => (
-            <div key={b.id} className={`bg-white rounded-xl border p-5 ${
-              b.timeline?.isOverdue ? 'border-red-400'
-              : b.timeline?.isUrgent ? 'border-orange-400'
-              : 'border-slate-200'
-            }`}>
+            <div key={b.id} className={'bg-white rounded-xl border p-5 ' + (b.timeline?.isOverdue ? 'border-red-400' : b.timeline?.isUrgent ? 'border-orange-400' : 'border-slate-200')}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -334,7 +314,6 @@ export default function BreachRegisterPage() {
           ))
         )}
       </main>
-    </div>
     </div>
   )
 }
