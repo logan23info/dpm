@@ -19,7 +19,7 @@ export async function getActorFromSession(): Promise<Actor | null> {
       email: session.user.email,
       role: ((session.user as any).role as Actor['role']) || 'preparer',
     }
-  } catch { return null }
+  } catch (e) { return null }
 }
 
 // Backward-compat for API routes (actor sent in x-actor-* headers)

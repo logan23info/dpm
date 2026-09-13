@@ -45,7 +45,7 @@ export default function NewWorkpaperPage() {
       if (!res.ok) { const d = await res.json(); setError(d.error || "Failed"); return }
       router.push(`/engagements/${engagementId}`)
     router.refresh()
-    } catch { setError("Network error") }
+    } catch (e) { setError("Network error") }
     finally { setLoading(false) }
   }
 

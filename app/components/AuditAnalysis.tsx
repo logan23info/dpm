@@ -163,7 +163,7 @@ export default function AuditAnalysis({
       setResult(data)
       setModifiedText(data.analysis)
       setShowDisposition(true)
-    } catch {
+    } catch (e) {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)

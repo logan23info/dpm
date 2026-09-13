@@ -9,7 +9,7 @@ export async function getSessionUser() {
   try {
     const s = await auth.api.getSession({ headers: await headers() })
     return s?.user ? (s.user as any) : null
-  } catch { return null }
+  } catch (e) { return null }
 }
 
 export async function requireRole(minRole: Role): Promise<{ user: any } | NextResponse> {

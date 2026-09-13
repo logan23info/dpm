@@ -1,0 +1,41 @@
+[1mdiff --git a/app/api/dashboard/route.ts b/app/api/dashboard/route.ts[m
+[1mindex c699647..8414b80 100644[m
+[1m--- a/app/api/dashboard/route.ts[m
+[1m+++ b/app/api/dashboard/route.ts[m
+[36m@@ -2,14 +2,14 @@[m
+ import { sql } from '@vercel/postgres'[m
+ import { NextResponse } from 'next/server'[m
+ [m
+[31m-export const dynamic = 'force-dynamic'  // disable Next.js caching[m
+[32m+[m[32mexport const dynamic = 'force-dynamic'[m
+ [m
+ export async function GET() {[m
+   try {[m
+     const engResult = await sql`[m
+       SELECT[m
+         e.id, e.title as name, e.status,[m
+[31m-        e.frameworks, e.period_start, e.period_end,[m
+[32m+[m[32m        e.frameworks, e.period_start, e.period_end, e.created_at,[m
+         COUNT(DISTINCT w.id)::int                                              AS wp_total,[m
+         COUNT(DISTINCT w.id) FILTER (WHERE w.signed_off_at IS NOT NULL)::int  AS wp_signed,[m
+         COUNT(DISTINCT w.id) FILTER (WHERE w.test_result = 'effective')::int  AS wp_effective,[m
+[36m@@ -22,18 +22,17 @@[m [mexport async function GET() {[m
+       ORDER BY e.created_at DESC[m
+     `[m
+     const rows = engResult.rows as any[][m
+[31m-[m
+     const totalEng         = rows.length[m
+     const openFindings     = rows.reduce((s, r) => s + (r.find_open    || 0), 0)[m
+     const critical         = rows.reduce((s, r) => s + (r.find_critical || 0), 0)[m
+     const effValues        = rows.filter(r => r.wp_total > 0).map(r => Math.round((r.wp_effective / r.wp_total) * 100))[m
+     const avgEffectiveness = effValues.length > 0 ? Math.round(effValues.reduce((a, b) => a + b, 0) / effValues.length) : 0[m
+[31m-[m
+     return NextResponse.json([m
+       { engagements: rows, stats: { totalEng, openFindings, critical, avgEffectiveness } },[m
+       { headers: { 'Cache-Control': 'no-store' } }[m
+     )[m
+   } catch (e: any) {[m
+[32m+[m[32m    console.error('Dashboard:', e.message)[m
+     return NextResponse.json({ error: e.message }, { status: 500 })[m
+   }[m
+ }[m

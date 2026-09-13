@@ -99,7 +99,7 @@ Be specific and evidence-based. This draft will be reviewed and edited by a qual
     try {
       const clean = raw.replace(/```json|```/g, '').trim()
       draft = JSON.parse(clean)
-    } catch {
+    } catch (e) {
       // Return raw if JSON parse fails
       draft = { title: 'Draft finding', condition: raw }
     }

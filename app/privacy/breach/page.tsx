@@ -75,6 +75,7 @@ function Clock72h({ timeline }: { timeline: NonNullable<Breach['timeline']> }) {
         Deadline: {new Date(timeline.deadline72h).toLocaleString('en-GB')}
       </p>
     </div>
+    </div>
   )
 }
 

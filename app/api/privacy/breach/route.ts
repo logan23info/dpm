@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       ORDER BY discovered_at DESC
     `
 
-    const enriched = result.rows.map(b => ({
+    const enriched = (result.rows as any[]).map(b => ({
       ...b,
       timeline: b.sa_notification_required && b.status !== 'closed'
         ? calcDeadline(b.discovered_at)

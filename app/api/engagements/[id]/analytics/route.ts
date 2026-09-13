@@ -81,7 +81,7 @@ export async function GET(
       WHERE engagement_id = ${id}
       GROUP BY severity
     `
-    const remediationProgress = remediationResult.rows.map(r => ({
+    const remediationProgress = (remediationResult.rows as any[]).map(r => ({
       severity: r.severity,
       open:     parseInt(r.open),
       closed:   parseInt(r.closed),
@@ -98,9 +98,9 @@ export async function GET(
       WHERE engagement_id = ${id}
     `
     const now = new Date()
-    const overdue          = allFindings.rows.filter(f => f.due_date && new Date(f.due_date) < now && f.status === 'open').length
-    const openFindings     = allFindings.rows.filter(f => f.status === 'open').length
-    const criticalFindings = allFindings.rows.filter(f => f.severity === 'critical' && f.status === 'open').length
+    const overdue          = (allFindings.rows as any[]).filter(f => f.due_date && new Date(f.due_date) < now && f.status === 'open').length
+    const openFindings     = (allFindings.rows as any[]).filter(f => f.status === 'open').length
+    const criticalFindings = (allFindings.rows as any[]).filter(f => f.severity === 'critical' && f.status === 'open').length
 
     const weakestDomain = riskByDomain.length > 0
       ? riskByDomain.reduce((a, b) => a.effectiveness < b.effectiveness ? a : b)

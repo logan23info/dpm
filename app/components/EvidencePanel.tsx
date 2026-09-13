@@ -57,7 +57,7 @@ export default function EvidencePanel({ workpaperId }: Props) {
       } else {
         setError("Failed to save evidence")
       }
-    } catch {
+    } catch (e) {
       setError("Network error")
     } finally {
       setSaving(false)

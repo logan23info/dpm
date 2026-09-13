@@ -35,7 +35,7 @@ export default function SignOffPanel({ workpaperId, signedOffAt, reviewedBy, onU
       } else {
         setError(data.error || "Failed to sign off")
       }
-    } catch {
+    } catch (e) {
       setError("Network error")
     } finally {
       setLoading(false)

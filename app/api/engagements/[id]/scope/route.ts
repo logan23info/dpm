@@ -16,7 +16,7 @@ export async function GET(
       WHERE engagement_id = ${params.id}
     `
 
-    const scopeMap = new Map(existing.rows.map(r => [r.control_id, r]))
+    const scopeMap = new Map((existing.rows as any[]).map(r => [r.control_id, r]))
     const allControls = controls.all()
 
     const result = allControls.map(c => ({
