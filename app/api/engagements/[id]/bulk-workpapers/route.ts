@@ -50,7 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
           ON CONFLICT DO NOTHING
         `
         created++
-      } catch { errors++ }
+      } catch (e) { errors++ }
     }
 
     return NextResponse.json({ message: `Created ${created} workpapers`, created, skipped, errors, total: toCreate.length })
