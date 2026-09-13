@@ -209,6 +209,5 @@ export default function ImportFindingsModal({ engagementId, onComplete, onClose 
           </div>
         </div>
       </div>
-    
   )
 }
