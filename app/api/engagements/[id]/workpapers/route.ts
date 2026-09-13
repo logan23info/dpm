@@ -12,7 +12,7 @@ export async function GET(
       SELECT id, control_id, version, implementation_status, test_result,
              residual_risk, conclusion, signed_off_at, updated_at
       FROM workpapers WHERE engagement_id = ${params.id}
-      ORDER BY created_at ASC
+      ORDER BY control_id ASC
     `
     return NextResponse.json(result.rows)
   } catch (error) {
