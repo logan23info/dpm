@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useActor } from "@/app/components/SessionBanner"
 
@@ -9,11 +8,15 @@ interface EngRow { id:string; name:string; status:string; frameworks:string[]; w
 
 export default function DashboardPage() {
   const { actor } = useActor()
-  const router = useRouter()
   const [engagements, setEngagements] = useState<EngRow[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ totalEng:0, openFindings:0, critical:0, avgEffectiveness:0 })
-  useEffect(() => { router.refresh(); fetchDashboard() }, [])
+  useEffect(() => {
+    fetchDashboard()
+    const onFocus = () => fetchDashboard()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [])
   const fetchDashboard = async () => {
     try {
       const res = await fetch("/api/dashboard")
