@@ -132,11 +132,8 @@ export default function ReviewNotesPanel({ workpaperId, isLocked }: Props) {
             return (
               <div
                 key={note.id}
-                className={`rounded-lg border p-4 ${
-                  note.status === 'open' ? 'border-red-200 bg-red-50'
-                  : note.status === 'responded' ? 'border-amber-200 bg-amber-50'
-                  : 'border-green-200 bg-green-50'
-                }`}
+               const cls1 = note.status === 'open' ? 'border-red-200 bg-red-50' : note.status === 'responded' ? 'border-amber-200 bg-amber-50' : 'border-green-200 bg-green-50' }
+                className={"rounded-lg border p-4 " + cls1}
               >
                 {/* Note header */}
                 <div className="flex items-start justify-between gap-2 mb-2">

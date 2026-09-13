@@ -143,9 +143,8 @@ export default function PBCPage() {
         <div className="flex gap-2 mb-4">
           {['All', 'outstanding', 'partial', 'received', 'waived'].map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition capitalize ${
-                filter === f ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
-              }`}>
+             const cls1 = filter === f ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50' }
+              className={"px-3 py-1.5 text-xs font-medium rounded-lg border transition capitalize " + cls1}>
               {f === 'All' ? 'All' : STATUS_CONFIG[f as keyof typeof STATUS_CONFIG]?.label || f}
             </button>
           ))}
@@ -173,9 +172,8 @@ export default function PBCPage() {
               const cfg = STATUS_CONFIG[item.status]
               const overdue = isOverdue(item)
               return (
-                <div key={item.id} className={`bg-white rounded-lg border p-4 ${
-                  overdue ? 'border-red-300' : 'border-slate-200'
-                }`}>
+                const cls2 = overdue ? 'border-red-300' : 'border-slate-200' }
+                <div key={item.id} className={"bg-white rounded-lg border p-4 " + cls2}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">

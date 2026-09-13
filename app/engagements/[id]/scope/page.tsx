@@ -226,23 +226,18 @@ export default function ScopingPage() {
           <div className="space-y-2">
             {filtered.map(d => (
               <div key={d.control_id}
-                className={`bg-white rounded-lg border p-4 transition ${
-                  d.in_scope === true ? 'border-green-300'
-                  : d.in_scope === false ? 'border-slate-200 opacity-60'
-                  : 'border-amber-300'
-                }`}
+               const cls1 = d.in_scope === true ? 'border-green-300' : d.in_scope === false ? 'border-slate-200 opacity-60' : 'border-amber-300' }
+                className={"bg-white rounded-lg border p-4 transition " + cls1}
               >
                 <div className="flex items-start gap-4">
                   {/* Scope toggle */}
                   <div className="flex gap-1 shrink-0 mt-0.5">
                     <button onClick={() => setScope(d.control_id, true)}
-                      className={`w-8 h-8 rounded-lg text-sm font-bold transition ${
-                        d.in_scope === true ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400 hover:bg-green-100'
-                      }`}>✓</button>
+                     const cls2 = d.in_scope === true ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400 hover:bg-green-100' }
+                      className={"w-8 h-8 rounded-lg text-sm font-bold transition " + cls2}>✓</button>
                     <button onClick={() => setScope(d.control_id, false)}
-                      className={`w-8 h-8 rounded-lg text-sm font-bold transition ${
-                        d.in_scope === false ? 'bg-slate-400 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
-                      }`}>✕</button>
+                     const cls3 = d.in_scope === false ? 'bg-slate-400 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200' }
+                      className={"w-8 h-8 rounded-lg text-sm font-bold transition " + cls3}>✕</button>
                   </div>
 
                   {/* Control info */}
@@ -272,11 +267,8 @@ export default function ScopingPage() {
                               ? '⚠️ Rationale required for exclusion (e.g. "No transfers outside EEA in period")'
                               : 'Scoping rationale (optional)'
                           }
-                          className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                            d.in_scope === false && !rationales[d.control_id]
-                              ? 'border-red-300 bg-red-50'
-                              : 'border-slate-200'
-                          }`}
+                         const cls4 = d.in_scope === false && !rationales[d.control_id] ? 'border-red-300 bg-red-50' : 'border-slate-200' }
+                          className={"w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 " + cls4}
                         />
                         {d.in_scope === false && !rationales[d.control_id] && (
                           <p className="text-xs text-red-600 mt-0.5">

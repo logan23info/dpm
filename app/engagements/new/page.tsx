@@ -104,11 +104,8 @@ export default function NewEngagementPage() {
                   key={fw}
                   type="button"
                   onClick={() => toggleFramework(fw)}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${
-                    form.frameworks.includes(fw)
-                      ? "bg-amber-500 border-amber-500 text-white"
-                      : "bg-white border-slate-300 text-slate-700 hover:border-amber-400"
-                  }`}
+                 const cls1 = form.frameworks.includes(fw) ? "bg-amber-500 border-amber-500 text-white" : "bg-white border-slate-300 text-slate-700 hover:border-amber-400" }
+                  className={"px-4 py-2 rounded-lg border text-sm font-medium transition " + cls1}
                 >
                   {fw}
                 </button>

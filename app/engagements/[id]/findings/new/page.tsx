@@ -92,14 +92,8 @@ export default function NewFindingPage() {
                   key={s}
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, severity: s }))}
-                  className={`py-2 rounded-lg border text-sm font-medium capitalize transition ${
-                    form.severity === s
-                      ? s === "critical" ? "bg-red-600 border-red-600 text-white"
-                        : s === "high" ? "bg-orange-500 border-orange-500 text-white"
-                        : s === "medium" ? "bg-amber-500 border-amber-500 text-white"
-                        : "bg-blue-500 border-blue-500 text-white"
-                      : "bg-white border-slate-300 text-slate-700 hover:border-amber-400"
-                  }`}
+                 const cls1 = form.severity === s ? s === "critical" ? "bg-red-600 border-red-600 text-white" : s === "high" ? "bg-orange-500 border-orange-500 text-white" : s === "medium" ? "bg-amber-500 border-amber-500 text-white" : "bg-blue-500 border-blue-500 text-white" : "bg-white border-slate-300 text-slate-700 hover:border-amber-400" }
+                  className={"py-2 rounded-lg border text-sm font-medium capitalize transition " + cls1}
                 >
                   {s}
                 </button>

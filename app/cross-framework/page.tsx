@@ -113,21 +113,15 @@ export default function CrossFrameworkPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setView('matrix')}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-                  view === 'matrix'
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
-                }`}
+               const cls1 = view === 'matrix' ? 'bg-slate-900 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50' }
+                className={"px-4 py-2 text-sm font-medium rounded-lg transition " + cls1}
               >
                 Domain Matrix
               </button>
               <button
                 onClick={() => setView('overlap')}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-                  view === 'overlap'
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
-                }`}
+               const cls2 = view === 'overlap' ? 'bg-slate-900 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50' }
+                className={"px-4 py-2 text-sm font-medium rounded-lg transition " + cls2}
               >
                 Overlap Analysis
               </button>
@@ -235,11 +229,8 @@ export default function CrossFrameworkPage() {
                                         onClick={() => setSelectedControl(
                                           selectedControl === c.id ? null : c.id
                                         )}
-                                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs transition ${
-                                          selectedControl === c.id
-                                            ? `${cfg.bg} ${cfg.text} ${cfg.border} ring-1 ring-current`
-                                            : `bg-white ${cfg.border} ${cfg.text} hover:${cfg.bg}`
-                                        }`}
+                                       const cls3 = selectedControl === c.id ? `${cfg.bg} ${cfg.text} ${cfg.border} ring-1 ring-current` : `bg-white ${cfg.border} ${cfg.text} hover:${cfg.bg}` }
+                                        className={"inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs transition " + cls3}
                                       >
                                         <span className="font-medium">{c.clause_ref}</span>
                                         {c.key_control && (
@@ -379,11 +370,8 @@ export default function CrossFrameworkPage() {
                               {c.key_control && (
                                 <span className="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded">Key</span>
                               )}
-                              <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                c.inherent_risk === 'High' ? 'bg-red-100 text-red-700'
-                                : c.inherent_risk === 'Medium' ? 'bg-amber-100 text-amber-700'
-                                : 'bg-blue-100 text-blue-700'
-                              }`}>{c.inherent_risk}</span>
+                              const cls4 = c.inherent_risk === 'High' ? 'bg-red-100 text-red-700' : c.inherent_risk === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700' }
+                              <span className={"text-xs px-1.5 py-0.5 rounded " + cls4}>{c.inherent_risk}</span>
                             </div>
                           </div>
                         </td>
@@ -393,27 +381,22 @@ export default function CrossFrameworkPage() {
                         <td className="px-5 py-3">
                           <div className="flex flex-wrap gap-1">
                             {/* Own framework */}
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                              (FW_COLORS[c.framework] || FW_COLORS.SOC2).bg
-                            } ${(FW_COLORS[c.framework] || FW_COLORS.SOC2).text}`}>
+                            const cls5 = (FW_COLORS[c.framework] || FW_COLORS.SOC2).bg } ${(FW_COLORS[c.framework] || FW_COLORS.SOC2).text}
+                            <span className={"text-xs px-2 py-0.5 rounded-full font-medium " + cls5}>
                               {FW_LABELS[c.framework] || c.framework}
                             </span>
                             {/* Mapped frameworks */}
                             {mappedTo.map(m => (
-                              <span key={m.id} className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                                (FW_COLORS[m.framework] || FW_COLORS.SOC2).bg
-                              } ${(FW_COLORS[m.framework] || FW_COLORS.SOC2).text}`}>
+                              const cls6 = (FW_COLORS[m.framework] || FW_COLORS.SOC2).bg } ${(FW_COLORS[m.framework] || FW_COLORS.SOC2).text}
+                              <span key={m.id} className={"text-xs px-2 py-0.5 rounded-full font-medium " + cls6}>
                                 {FW_LABELS[m.framework] || m.framework}
                               </span>
                             ))}
                           </div>
                         </td>
                         <td className="px-5 py-3 text-center">
-                          <span className={`text-lg font-bold ${
-                            coverageCount >= 4 ? 'text-green-600'
-                            : coverageCount >= 3 ? 'text-amber-600'
-                            : 'text-slate-400'
-                          }`}>{coverageCount}</span>
+                          const cls7 = coverageCount >= 4 ? 'text-green-600' : coverageCount >= 3 ? 'text-amber-600' : 'text-slate-400' }
+                          <span className={"text-lg font-bold " + cls7}>{coverageCount}</span>
                         </td>
                       </tr>
 

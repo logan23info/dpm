@@ -333,11 +333,8 @@ export default function AnalyticsDashboard({ engagementId }: { engagementId: str
                       </div>
                     </td>
                     <td className="py-3 text-center">
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        d.effectiveness >= 80 ? "bg-green-100 text-green-800"
-                        : d.effectiveness >= 60 ? "bg-amber-100 text-amber-800"
-                        : "bg-red-100 text-red-800"
-                      }`}>
+                      const cls1 = d.effectiveness >= 80 ? "bg-green-100 text-green-800" : d.effectiveness >= 60 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800" }
+                      <span className={"text-xs px-2 py-1 rounded-full font-medium " + cls1}>
                         {d.effectiveness >= 80 ? "Strong" : d.effectiveness >= 60 ? "Moderate" : "Weak"}
                       </span>
                     </td>

@@ -266,9 +266,8 @@ export default function AuditAnalysis({
               const isActive = mode === m
               return (
                 <button key={m} onClick={() => { setMode(m); setResult(null); setShowDisposition(false) }}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition ${
-                    isActive ? `${c.btnBg} text-white border-transparent` : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400'
-                  }`}
+                 const cls1 = isActive ? `${c.btnBg} text-white border-transparent` : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400' }
+                  className={"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition " + cls1}
                 >
                   <span>{c.icon}</span>
                   <span>{c.label}</span>
@@ -338,11 +337,8 @@ export default function AuditAnalysis({
                     const dc = DISPOSITION_CONFIG[d]
                     return (
                       <button key={d} onClick={() => setDisposition(d)}
-                        className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition ${
-                          disposition === d
-                            ? `${dc.color} border-current`
-                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'
-                        }`}
+                       const cls2 = disposition === d ? `${dc.color} border-current` : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400' }
+                        className={"p-3 rounded-lg border-2 text-sm font-medium text-center transition " + cls2}
                       >
                         <div className="text-lg mb-1">{dc.icon}</div>
                         <div>{dc.label}</div>

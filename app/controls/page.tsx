@@ -143,11 +143,8 @@ export default function ControlsPage() {
                   prev.includes(fw) ? prev.filter(f => f !== fw) : [...prev, fw]
                 )
               }}
-                className={`text-xs px-2 py-1 rounded-full border font-medium transition ${
-                  selectedFws.includes(fw)
-                    ? (FW_COLORS[fw] || 'bg-slate-100 text-slate-700') + ' border-transparent'
-                    : 'bg-white border-slate-300 text-slate-400'
-                }`}
+               const cls1 = selectedFws.includes(fw) ? (FW_COLORS[fw] || 'bg-slate-100 text-slate-700') + ' border-transparent' : 'bg-white border-slate-300 text-slate-400' }
+                className={"text-xs px-2 py-1 rounded-full border font-medium transition " + cls1}
               >
                 {fw}
               </button>
@@ -278,9 +275,8 @@ export default function ControlsPage() {
               <div className="flex gap-2 mb-3">
                 {(['gap', 'draft'] as AIMode[]).map(m => (
                   <button key={m} onClick={() => setAiMode(m)}
-                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition capitalize ${
-                      aiMode === m ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}>
+                   const cls2 = aiMode === m ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }
+                    className={"flex-1 py-1.5 text-xs font-medium rounded-lg transition capitalize " + cls2}>
                     {m === 'gap' ? '🔍 Gap Check' : '📝 Draft Control'}
                   </button>
                 ))}
