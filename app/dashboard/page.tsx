@@ -14,7 +14,7 @@ export default function DashboardPage() {
   useEffect(() => { fetchDashboard() }, [])
   const fetchDashboard = async () => {
     try {
-      const res = await fetch("/api/dashboard")
+      const res = await fetch("/api/dashboard?t=" + Date.now())
       if (res.ok) { const d = await res.json(); setEngagements(d.engagements); setStats(d.stats) }
     } catch(e) { console.error(e) } finally { setLoading(false) }
   }

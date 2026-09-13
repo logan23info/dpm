@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import AuditAnalysis from "@/app/components/AuditAnalysis"
@@ -56,6 +56,7 @@ export default function WorkpaperPage() {
   const [autoDraft, setAutoDraft] = useState<any>(null)
   const [draftingFinding, setDraftingFinding] = useState(false)
   const [savingFinding, setSavingFinding] = useState(false)
+  const [showRef, setShowRef] = useState(false)
 
   useEffect(() => { if (id) fetchWorkpaper() }, [id])
 
@@ -167,8 +168,6 @@ export default function WorkpaperPage() {
     return controlAuthority
   }
   const clauseUrl = getClauseUrl()
-  const [showRef, setShowRef] = React.useState(false)
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
