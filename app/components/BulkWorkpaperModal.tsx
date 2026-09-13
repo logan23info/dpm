@@ -52,7 +52,7 @@ export default function BulkWorkpaperModal({ engagementId, onComplete, onClose }
         return
       }
       setResult(data)
-    } catch {
+    } catch (err) {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)
