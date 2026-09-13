@@ -221,6 +221,5 @@ export default function ReviewNotesPanel({ workpaperId, isLocked }: Props) {
           })}
         </div>
       )}
-    </div>
   )
 }
