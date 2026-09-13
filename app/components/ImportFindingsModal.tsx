@@ -63,7 +63,7 @@ export default function ImportFindingsModal({ engagementId, onComplete, onClose 
       }
 
       setResult(data)
-    } catch {
+    } catch (e) {
       setError("Network error. Please try again.")
     } finally {
       setLoading(false)

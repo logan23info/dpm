@@ -76,7 +76,7 @@ export default function WorkpaperPage() {
     try {
       const res = await fetch(`/api/workpapers/${wpId}/maturity`)
       if (res.ok) setMaturity(await res.json())
-    } catch {}
+    } catch (e) {}
   }
 
   const draftFinding = async () => {
