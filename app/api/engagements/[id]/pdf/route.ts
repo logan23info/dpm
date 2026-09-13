@@ -183,7 +183,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     const filename = `Audit-Report-${(eng.name || 'Report').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().split('T')[0]}.pdf`
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
