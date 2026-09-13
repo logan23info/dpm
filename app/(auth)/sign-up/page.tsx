@@ -7,9 +7,9 @@ import { signUp } from '@/lib/auth-client'
 const ROLES = [
   { value:'preparer', label:'Preparer — conducts testing, documents workpapers' },
   { value:'reviewer', label:'Reviewer — reviews and signs off workpapers' },
-  { value:'admin',    label:'Admin — full platform access' },
   { value:'viewer',   label:'Viewer — read-only access' },
 ]
+// Admin role assigned by existing admin via /admin panel only
 
 export default function SignUpPage() {
   const router = useRouter()
