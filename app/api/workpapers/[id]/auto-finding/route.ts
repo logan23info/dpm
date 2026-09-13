@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getActor } from '@/lib/session'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-20b'
 

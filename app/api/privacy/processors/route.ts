@@ -2,6 +2,8 @@
 import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   try {
     const result = await sql`

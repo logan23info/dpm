@@ -8,6 +8,8 @@ import { sql } from '@vercel/postgres'
 import * as XLSX from 'xlsx'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }

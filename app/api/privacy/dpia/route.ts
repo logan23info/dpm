@@ -3,6 +3,8 @@ import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser } from '@/lib/rbac'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const result = await sql`

@@ -3,6 +3,8 @@ import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 import { getActor } from '@/lib/session'
 
+export const dynamic = 'force-dynamic'
+
 function calcDeadline(discoveredAt: string) {
   const discovered = new Date(discoveredAt)
   const deadline72h = new Date(discovered.getTime() + 72 * 60 * 60 * 1000)

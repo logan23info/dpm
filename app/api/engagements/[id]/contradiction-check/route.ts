@@ -6,6 +6,8 @@ import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 interface Contradiction {
   workpaper_id: string
   control_id: string

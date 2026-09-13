@@ -6,6 +6,8 @@ import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireRole } from '@/lib/rbac'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const result = await sql`

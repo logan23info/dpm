@@ -4,6 +4,8 @@
 import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // CMMI-style maturity model for privacy controls
 const MATURITY_LEVELS = {
   1: { label: 'Initial',    description: 'Ad hoc, unpredictable. No documented process.' },

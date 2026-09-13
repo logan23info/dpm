@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getActor } from '@/lib/session'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 // GET — scoping decisions + unscoped controls
 export async function GET(
   req: NextRequest,

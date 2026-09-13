@@ -8,6 +8,8 @@ import controls from '@/lib/controls'
 import { getActor } from '@/lib/session'
 import { sql } from '@vercel/postgres'
 
+export const dynamic = 'force-dynamic'
+
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-20b'
 

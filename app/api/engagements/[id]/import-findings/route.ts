@@ -4,6 +4,8 @@ import { sql } from '@vercel/postgres'
 import * as XLSX from 'xlsx'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 function findColumn(headers: string[], keywords: string[]): string | null {
   return (
     headers.find(h =>

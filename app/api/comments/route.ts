@@ -6,6 +6,8 @@ import { sql } from '@vercel/postgres'
 import { NextRequest, NextResponse } from 'next/server'
 import { getActor } from '@/lib/session'
 
+export const dynamic = 'force-dynamic'
+
 // GET all notes for a workpaper
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)

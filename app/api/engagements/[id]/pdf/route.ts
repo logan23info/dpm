@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@vercel/postgres'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 const PAGE_W = 595.28  // A4 width in points
 const PAGE_H = 841.89  // A4 height in points
 const MARGIN = 50

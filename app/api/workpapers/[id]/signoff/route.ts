@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireRole } from '@/lib/rbac'
 import { getActor } from '@/lib/session'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   // Must be reviewer or admin
   const check = await requireRole('reviewer')

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getActor } from '@/lib/session'
 import controls from '@/lib/controls'
 
+export const dynamic = 'force-dynamic'
+
 // GET PBC items for engagement
 export async function GET(
   req: NextRequest,
