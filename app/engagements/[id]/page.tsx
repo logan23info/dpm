@@ -26,7 +26,7 @@ type Tab = "workpapers"|"findings"|"analytics"
 export default function EngagementPage() {
   const params = useParams()
   const id = params.id as string
-  const { actorHeaders } = useActor()
+  const { actorHeaders, actor } = useActor()
   const [engagement, setEngagement] = useState<Engagement|null>(null)
   const [workpapers, setWorkpapers] = useState<Workpaper[]>([])
   const [findings, setFindings] = useState<Finding[]>([])
