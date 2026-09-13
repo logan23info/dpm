@@ -44,7 +44,8 @@ const STATUS_COLORS: Record<string, string> = {
   closed:    'bg-green-100 text-green-800',
 }
 
-function Clock72h({ timeline }: { timeline: NonNullable<Breach['timeline']> }) {
+type BreachTimeline = NonNullable<Breach['timeline']>
+function Clock72h({ timeline }: { timeline: BreachTimeline }) {
   const pct = Math.max(0, Math.min(100, (timeline.hoursRemaining / 72) * 100))
   const color = timeline.isOverdue ? 'bg-red-500'
     : timeline.isUrgent ? 'bg-orange-500'
