@@ -1,129 +1,81 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useActor } from "@/app/components/SessionBanner"
 
-interface Engagement {
-  id: string
-  name: string
-  frameworks: string[]
-  period_start: string
-  period_end: string
-  status: string
-  created_at: string
-}
+interface EngRow { id:string; name:string; status:string; frameworks:string[]; wp_total:number; wp_signed:number; wp_effective:number; find_open:number; find_critical:number }
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [engagements, setEngagements] = useState<Engagement[]>([])
+  const { actor } = useActor()
+  const [engagements, setEngagements] = useState<EngRow[]>([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchEngagements()
-  }, [])
-
-  const fetchEngagements = async () => {
+  const [stats, setStats] = useState({ totalEng:0, openFindings:0, critical:0, avgEffectiveness:0 })
+  useEffect(() => { fetchDashboard() }, [])
+  const fetchDashboard = async () => {
     try {
-      const res = await fetch("/api/engagements")
-      if (res.ok) {
-        const data = await res.json()
-        setEngagements(data)
-      }
-    } catch (error) {
-      console.error("Failed to fetch engagements:", error)
-    } finally {
-      setLoading(false)
-    }
+      const res = await fetch("/api/dashboard")
+      if (res.ok) { const d = await res.json(); setEngagements(d.engagements); setStats(d.stats) }
+    } catch(e) { console.error(e) } finally { setLoading(false) }
   }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading engagements...</p>
-        </div>
-      </div>
-    )
-  }
-
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500" />
+    </div>
+  )
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">RCM Studio</h1>
-            </div>
-            <div className="flex gap-2">
-              <a href="/privacy" className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                🛡️ Privacy Hub
-              </a>
-              <a href="/cross-framework" className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition">
-                🗺️ Framework Map
-              </a>
-              <p className="text-slate-600 mt-1">Privacy & Data Protection Audit Platform</p>
-            </div>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+            {actor && <p className="text-sm text-slate-500 mt-0.5">Welcome, {actor.name}</p>}
           </div>
+          <Link href="/engagements/new" className="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700">+ New Engagement</Link>
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">Engagements</h2>
-            <button
-              onClick={() => router.push("/engagements/new")}
-              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition"
-            >
-              + New Engagement
-            </button>
-          </div>
-
-          {engagements.length === 0 ? (
-            <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-              <p className="text-slate-600 mb-4">No engagements yet</p>
-              <button
-                onClick={() => router.push("/engagements/new")}
-                className="inline-block px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600"
-              >
-                Create your first engagement
-              </button>
+        <div className="grid grid-cols-4 gap-4 mb-8">
+          {[
+            { label:"Engagements",       value:String(stats.totalEng),        color:"text-slate-900", bg:"bg-white" },
+            { label:"Open Findings",     value:String(stats.openFindings),    color:"text-red-600",   bg:"bg-red-50" },
+            { label:"Critical",          value:String(stats.critical),        color:"text-red-700",   bg:"bg-red-50" },
+            { label:"Avg Effectiveness", value:`${stats.avgEffectiveness}%`,  color:"text-green-700", bg:"bg-green-50" },
+          ].map(s => (
+            <div key={s.label} className={`${s.bg} rounded-xl border border-slate-200 p-5`}>
+              <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+              <p className="text-xs text-slate-500 mt-1">{s.label}</p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {engagements.map((eng) => (
-                <Link
-                  key={eng.id}
-                  href={`/engagements/${eng.id}`}
-                  className="bg-white rounded-lg border border-slate-200 p-6 hover:border-amber-500 hover:shadow-lg transition cursor-pointer"
-                >
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">{eng.name}</h3>
-                  <p className="text-sm text-slate-600 mb-4">{eng.frameworks?.join(", ")}</p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Period:</span>
-                      <span className="font-medium text-slate-900">{eng.period_start} to {eng.period_end}</span>
+          ))}
+        </div>
+        {engagements.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <p className="text-slate-600 font-medium">No engagements yet</p>
+            <Link href="/engagements/new" className="mt-4 inline-block px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700">Create First Engagement</Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {engagements.map(eng => {
+              const eff = eng.wp_total > 0 ? Math.round((eng.wp_effective / eng.wp_total) * 100) : 0
+              return (
+                <Link key={eng.id} href={`/engagements/${eng.id}`} className="block bg-white rounded-xl border border-slate-200 p-5 hover:border-amber-400 hover:shadow-sm transition">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900">{eng.name}</h3>
+                      <p className="text-xs text-slate-400 mt-0.5">{eng.frameworks?.join(" · ")}</p>
+                      <div className="flex gap-4 mt-2 text-xs">
+                        <span className="text-slate-500">Effectiveness: <strong className={eff>=80?"text-green-600":eff>=60?"text-amber-600":"text-red-600"}>{eff}%</strong></span>
+                        <span className="text-slate-500">Signed: <strong>{eng.wp_signed}/{eng.wp_total}</strong></span>
+                        {eng.find_open > 0 && <span className="text-red-600 font-medium">{eng.find_open} open findings</span>}
+                        {eng.find_critical > 0 && <span className="text-red-700 font-bold">{eng.find_critical} critical</span>}
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Status:</span>
-                      <span className={`font-medium capitalize px-2 py-1 rounded text-xs ${
-                        eng.status === "closed" ? "bg-green-100 text-green-800"
-                        : eng.status === "review" ? "bg-amber-100 text-amber-800"
-                        : eng.status === "testing" ? "bg-blue-100 text-blue-800"
-                        : "bg-slate-100 text-slate-800"
-                      }`}>
-                        {eng.status}
-                      </span>
-                    </div>
+                    <span className="text-slate-300 ml-4">&#8594;</span>
                   </div>
                 </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
