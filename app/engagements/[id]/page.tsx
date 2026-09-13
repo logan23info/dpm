@@ -42,8 +42,39 @@ export default function EngagementPage() {
   const [generatingSummary, setGeneratingSummary] = useState(false)
   const [priorYear, setPriorYear] = useState<any>(null)
   const [checkingPriorYear, setCheckingPriorYear] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [editForm, setEditForm] = useState<any>(null)
+  const [editSaving, setEditSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => { if (id) fetchAll() }, [id])
+
+  const startEdit = () => {
+    setEditForm({ name: engagement?.name || '', status: engagement?.status || 'active', period_start: engagement?.period_start || '', period_end: engagement?.period_end || '' })
+    setShowEdit(true)
+  }
+
+  const saveEdit = async () => {
+    setEditSaving(true)
+    try {
+      const res = await fetch(`/api/engagements/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...actorHeaders },
+        body: JSON.stringify(editForm),
+      })
+      if (res.ok) { const d = await res.json(); setEngagement(prev => prev ? { ...prev, ...d } : prev); setShowEdit(false) }
+    } finally { setEditSaving(false) }
+  }
+
+  const deleteEngagement = async () => {
+    if (!confirm(`Delete "${engagement?.name}"? This permanently removes all workpapers, findings and evidence. This cannot be undone.`)) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/engagements/${id}`, { method: 'DELETE', headers: actorHeaders })
+      if (res.ok) { window.location.href = '/dashboard' }
+      else { const d = await res.json(); alert(d.error) }
+    } finally { setDeleting(false) }
+  }
 
   const fetchAll = async () => {
     try {
@@ -131,11 +162,16 @@ export default function EngagementPage() {
               <button onClick={checkPriorYear} disabled={checkingPriorYear} className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 disabled:opacity-50 transition">{checkingPriorYear?"Checking...":"Prior Year"}</button>
               <button onClick={runContradictionCheck} disabled={checkingContradictions} className="px-3 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 disabled:opacity-50 transition">{checkingContradictions?"Checking...":"Quality"}</button>
               <button onClick={generateAISummary} disabled={generatingSummary} className="px-3 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition">{generatingSummary?"Drafting...":"AI Summary"}</button>
-              <a href={`/api/engagements/${id}/export`} download className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">Excel</a>
-              <a href={`/api/engagements/${id}/pdf`} download className="px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">PDF</a>
+              <a href={`/api/engagements/${id}/export`} download className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">Export</a>
               <button onClick={()=>setShowImport(true)} className="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">Import</button>
               <Link href={`/engagements/${id}/workpapers/new`} className="px-3 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">+ Workpaper</Link>
               <Link href={`/engagements/${id}/findings/new`} className="px-3 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition">+ Finding</Link>
+              {actor?.role === 'admin' && (
+                <>
+                  <button onClick={startEdit} className="px-3 py-2 bg-slate-600 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition">✏️ Edit</button>
+                  <button onClick={deleteEngagement} disabled={deleting} className="px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 transition">{deleting ? '...' : '🗑 Delete'}</button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -295,6 +331,50 @@ export default function EngagementPage() {
           </div>
         )}
       </div>
+
+      {showEdit && editForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Edit Engagement</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-slate-600">Name</label>
+                <input value={editForm.name} onChange={e => setEditForm((p: any) => ({ ...p, name: e.target.value }))}
+                  className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-600">Status</label>
+                <select value={editForm.status} onChange={e => setEditForm((p: any) => ({ ...p, status: e.target.value }))}
+                  className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  {['planned','active','completed','archived'].map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-slate-600">Period Start</label>
+                  <input type="date" value={editForm.period_start} onChange={e => setEditForm((p: any) => ({ ...p, period_start: e.target.value }))}
+                    className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-600">Period End</label>
+                  <input type="date" value={editForm.period_end} onChange={e => setEditForm((p: any) => ({ ...p, period_end: e.target.value }))}
+                    className="w-full mt-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button onClick={saveEdit} disabled={editSaving}
+                  className="flex-1 bg-amber-600 text-white font-medium py-2.5 rounded-lg hover:bg-amber-700 disabled:opacity-50 transition">
+                  {editSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button onClick={() => setShowEdit(false)}
+                  className="px-4 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition text-sm">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
