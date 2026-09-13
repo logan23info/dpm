@@ -26,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/privacy" className="text-slate-400 text-xs hover:text-white transition">Privacy Hub</a>
             <a href="/cross-framework" className="text-slate-400 text-xs hover:text-white transition">Framework Map</a>
             <a href="/controls" className="text-slate-400 text-xs hover:text-white transition">Control Library</a>
+            <a href="/admin" className="text-slate-400 text-xs hover:text-white transition">Admin</a>
           </div>
           <SessionBanner />
         </div>

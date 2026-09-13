@@ -131,7 +131,8 @@ export default function EngagementPage() {
               <button onClick={checkPriorYear} disabled={checkingPriorYear} className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 disabled:opacity-50 transition">{checkingPriorYear?"Checking...":"Prior Year"}</button>
               <button onClick={runContradictionCheck} disabled={checkingContradictions} className="px-3 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 disabled:opacity-50 transition">{checkingContradictions?"Checking...":"Quality"}</button>
               <button onClick={generateAISummary} disabled={generatingSummary} className="px-3 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 disabled:opacity-50 transition">{generatingSummary?"Drafting...":"AI Summary"}</button>
-              <a href={`/api/engagements/${id}/export`} download className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">Export</a>
+              <a href={`/api/engagements/${id}/export`} download className="px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">Excel</a>
+              <a href={`/api/engagements/${id}/pdf`} download className="px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">PDF</a>
               <button onClick={()=>setShowImport(true)} className="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">Import</button>
               <Link href={`/engagements/${id}/workpapers/new`} className="px-3 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">+ Workpaper</Link>
               <Link href={`/engagements/${id}/findings/new`} className="px-3 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition">+ Finding</Link>
