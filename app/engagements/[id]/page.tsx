@@ -133,7 +133,7 @@ export default function EngagementPage() {
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
         <p className="text-slate-600 mb-4">Engagement not found</p>
-        <Link href="/dashboard" className="text-amber-600 hover:underline">Back to Dashboard</Link>
+        <a href={"/dashboard?t=" + Date.now()} className="text-amber-600 hover:underline">Back to Dashboard</a>
       </div>
     </div>
   )
@@ -148,7 +148,7 @@ export default function EngagementPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-slate-500 hover:text-slate-700 text-sm">Dashboard</Link>
+              <a href={"/dashboard?t=" + Date.now()} className="text-slate-500 hover:text-slate-700 text-sm">Dashboard</a>
               <div>
                 <h1 className="text-xl font-bold text-slate-900">{engagement.name}</h1>
                 <p className="text-sm text-slate-500">{engagement.frameworks?.join(" · ")} · {engagement.period_start} to {engagement.period_end}</p>
