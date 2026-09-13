@@ -44,8 +44,7 @@ const STATUS_COLORS: Record<string, string> = {
   closed:    'bg-green-100 text-green-800',
 }
 
-type BreachTimeline = NonNullable<Breach['timeline']>
-function Clock72h({ timeline }: { timeline: BreachTimeline }) {
+function Clock72h({ timeline }: { timeline: NonNullable<Breach['timeline']> }) {
   const pct = Math.max(0, Math.min(100, (timeline.hoursRemaining / 72) * 100))
   const color = timeline.isOverdue ? 'bg-red-500'
     : timeline.isUrgent ? 'bg-orange-500'
@@ -106,7 +105,7 @@ export default function BreachRegisterPage() {
         setBreaches(data.breaches)
         setSummary(data.summary)
       }
-    } catch (e) { console.error(e) } finally { setLoading(false) }
+    } finally { setLoading(false) }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -133,7 +132,7 @@ export default function BreachRegisterPage() {
         })
         fetchBreaches()
       }
-    } catch (e) { console.error(e) } finally { setSaving(false) }
+    } finally { setSaving(false) }
   }
 
   const notifySA = async (id: string) => {
@@ -334,8 +333,8 @@ export default function BreachRegisterPage() {
             </div>
           ))
         )}
-      </div>
       </main>
     </div>
+  </div>
   )
 }
