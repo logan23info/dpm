@@ -71,7 +71,7 @@ export default function EngagementPage() {
     setDeleting(true)
     try {
       const res = await fetch(`/api/engagements/${id}`, { method: 'DELETE', headers: actorHeaders })
-      if (res.ok) { window.location.href = '/dashboard' }
+      if (res.ok) { window.location.href = '/dashboard?t=' + Date.now() }
       else { const d = await res.json(); alert(d.error) }
     } finally { setDeleting(false) }
   }
