@@ -196,8 +196,9 @@ export default function AuditAnalysis({
         setDisposition(null)
         setAuditorNote('')
       }
-    } finally {
-      setDispositionSaving(false) }
+    } catch (e) { console.error(e) } finally {
+      setDispositionSaving(false)
+    }
   }
 
   const cfg = MODE_CONFIG[mode]

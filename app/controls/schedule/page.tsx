@@ -49,7 +49,7 @@ export default function SchedulePage() {
     try {
       const res = await fetch(`/api/controls/schedule?filter=${filter}`)
       if (res.ok) { const d = await res.json(); setItems(d.schedule); setSummary(d.summary) }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const markComplete = async (id: string) => {
@@ -61,7 +61,7 @@ export default function SchedulePage() {
         body: JSON.stringify({ id, action: 'complete' }),
       })
       fetchSchedule()
-    } finally { setCompleting(null) }
+    } catch (e) { console.error(e) } finally { setCompleting(null) }
   }
 
   return (

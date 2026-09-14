@@ -56,7 +56,7 @@ export default function ProcessorRegisterPage() {
         setProcessors(data.processors)
         setSummary(data.summary)
       }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,7 +73,7 @@ export default function ProcessorRegisterPage() {
         body: JSON.stringify(payload),
       })
       if (res.ok) { fetchProcessors(); setShowForm(false) }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) } finally { setSaving(false) }
   }
 
   const updateDPA = async (id: string, dpa_status: string) => {

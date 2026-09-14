@@ -50,7 +50,7 @@ export default function DPIAPage() {
     try {
       const res = await fetch('/api/privacy/dpia')
       if (res.ok) { const d = await res.json(); setDpias(d.dpias); setSummary(d.summary) }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const allAnswered = () => Object.keys(answers).length >= SCREENING.length
@@ -75,7 +75,7 @@ export default function DPIAPage() {
         setForm({ name:'', processing_description:'', necessity_justification:'', mitigations:'', dpo_consulted:false, dpo_advice:'', residual_risk:'medium' })
         setRisks([]); setAnswers({})
       }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) } finally { setSaving(false) }
   }
 
   const approve = async (id: string) => {

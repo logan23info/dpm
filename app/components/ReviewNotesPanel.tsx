@@ -42,8 +42,7 @@ export default function ReviewNotesPanel({ workpaperId, isLocked }: Props) {
     try {
       const res = await fetch(`/api/comments?workpaper_id=${workpaperId}`)
       if (res.ok) setNotes(await res.json())
-    } catch (e) { console.error(e) }
-    finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const raiseNote = async () => {

@@ -64,7 +64,7 @@ export default function RoPAPage() {
         setEntries(data.entries)
         setSummary(data.summary)
       }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,7 +87,7 @@ export default function RoPAPage() {
         setShowForm(false)
         setForm(BLANK)
       }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) } finally { setSaving(false) }
   }
 
   const markReviewed = async (id: string) => {

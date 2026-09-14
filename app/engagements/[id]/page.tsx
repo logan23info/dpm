@@ -63,7 +63,7 @@ export default function EngagementPage() {
         body: JSON.stringify(editForm),
       })
       if (res.ok) { const d = await res.json(); setEngagement(prev => prev ? { ...prev, ...d } : prev); setShowEdit(false) }
-    } finally { setEditSaving(false) }
+    } catch (e) { console.error(e) } finally { setEditSaving(false) }
   }
 
   const deleteEngagement = async () => {
@@ -73,7 +73,7 @@ export default function EngagementPage() {
       const res = await fetch(`/api/engagements/${id}`, { method: 'DELETE', headers: actorHeaders })
       if (res.ok) { window.location.href = '/dashboard?t=' + Date.now() }
       else { const d = await res.json(); alert(d.error) }
-    } finally { setDeleting(false) }
+    } catch (e) { console.error(e) } finally { setDeleting(false) }
   }
 
   const fetchAll = async () => {
@@ -86,8 +86,7 @@ export default function EngagementPage() {
       if (engRes.ok) setEngagement(await engRes.json())
       if (wpRes.ok) setWorkpapers(await wpRes.json())
       if (findRes.ok) setFindings(await findRes.json())
-    } catch (e) { console.error(e) }
-    finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const updateFindingStatus = async (findingId:string, action:string, extra?:object) => {
@@ -103,7 +102,7 @@ export default function EngagementPage() {
     try {
       const res = await fetch(`/api/engagements/${id}/contradiction-check`)
       if (res.ok) { const d = await res.json(); setContradictions(d.contradictions); setContradictionSummary(d.summary); setActiveTab("analytics") }
-    } finally { setCheckingContradictions(false) }
+    } catch (e) { console.error(e) } finally { setCheckingContradictions(false) }
   }
 
   const generateAISummary = async () => {
@@ -112,7 +111,7 @@ export default function EngagementPage() {
       const res = await fetch(`/api/engagements/${id}/ai-summary`, { method:"POST", headers:{"Content-Type":"application/json",...actorHeaders} })
       const d = await res.json()
       setAiSummary(res.ok ? d.summary : `Error: ${d.error}`)
-    } finally { setGeneratingSummary(false) }
+    } catch (e) { console.error(e) } finally { setGeneratingSummary(false) }
   }
 
   const checkPriorYear = async () => {
@@ -120,7 +119,7 @@ export default function EngagementPage() {
     try {
       const res = await fetch(`/api/engagements/${id}/prior-year`)
       if (res.ok) { setPriorYear(await res.json()); setActiveTab("findings") }
-    } finally { setCheckingPriorYear(false) }
+    } catch (e) { console.error(e) } finally { setCheckingPriorYear(false) }
   }
 
   if (loading) return (

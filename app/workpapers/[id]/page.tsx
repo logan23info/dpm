@@ -68,8 +68,7 @@ export default function WorkpaperPage() {
         setWorkpaper(data)
         fetchMaturity(id)
       }
-    } catch (e) { console.error(e) }
-    finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const fetchMaturity = async (wpId: string) => {
@@ -90,7 +89,7 @@ export default function WorkpaperPage() {
       const data = await res.json()
       if (res.ok) setAutoDraft(data.draft)
       else alert(data.error)
-    } finally { setDraftingFinding(false) }
+    } catch (e) { console.error(e) } finally { setDraftingFinding(false) }
   }
 
   const saveDraftFinding = async () => {
@@ -103,7 +102,7 @@ export default function WorkpaperPage() {
         body: JSON.stringify({ ...autoDraft, origin: "ai_assisted" }),
       })
       if (res.ok) { setAutoDraft(null); alert("Finding saved") }
-    } finally { setSavingFinding(false) }
+    } catch (e) { console.error(e) } finally { setSavingFinding(false) }
   }
 
   const startEdit = () => {
@@ -133,7 +132,7 @@ export default function WorkpaperPage() {
       setWorkpaper(prev => prev ? { ...prev, ...data } : prev)
       setActiveTab("details")
       setEditForm(null)
-    } finally { setEditSaving(false) }
+    } catch (e) { console.error(e) } finally { setEditSaving(false) }
   }
 
   if (loading) return (

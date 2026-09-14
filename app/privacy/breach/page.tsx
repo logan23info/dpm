@@ -89,7 +89,7 @@ export default function BreachRegisterPage() {
         setBreaches(data.breaches)
         setSummary(data.summary)
       }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,7 +116,7 @@ export default function BreachRegisterPage() {
         })
         fetchBreaches()
       }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) } finally { setSaving(false) }
   }
 
   const notifySA = async (id: string) => {

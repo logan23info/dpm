@@ -33,7 +33,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/users', { headers: actorHeaders })
       if (res.ok) setUsers(await res.json())
       else setError('Access denied — admin only')
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const updateRole = async (id: string, role: string) => {
@@ -45,7 +45,7 @@ export default function AdminPage() {
         body: JSON.stringify({ id, role }),
       })
       if (res.ok) fetchUsers()
-    } finally { setSaving(null) }
+    } catch (e) { console.error(e) } finally { setSaving(null) }
   }
 
   if (loading) return (
