@@ -60,7 +60,7 @@ export default function ReviewNotesPanel({ workpaperId, isLocked }: Props) {
         setNotes(p => [...p, note])
         setNewNote('')
       }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) } finally { setSaving(false) }
   }
 
   const act = async (id: string, action: string, extra?: Record<string, string>) => {

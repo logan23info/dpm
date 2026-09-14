@@ -56,7 +56,7 @@ export default function PBCPage() {
         setItems(data.items)
         setSummary(data.summary)
       }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
   const act = async (itemId: string, action: string, extra?: object) => {
@@ -85,7 +85,7 @@ export default function PBCPage() {
       } else {
         alert('❌ ' + data.error)
       }
-    } finally { setGenerating(false) }
+    } catch (e) { console.error(e) }finally { setGenerating(false) }
   }
 
   const isOverdue = (item: PBCItem) =>

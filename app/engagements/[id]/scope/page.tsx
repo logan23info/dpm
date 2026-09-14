@@ -65,7 +65,7 @@ export default function ScopingPage() {
         })
         setRationales(initRationales)
       }
-    } finally { setLoading(false) }
+    } catch (e) { console.error(e) }finally { setLoading(false) }
   }
 
   const filtered = useMemo(() => decisions.filter(d => {
@@ -114,7 +114,7 @@ export default function ScopingPage() {
         setPendingChanges({})
         fetchScope()
       }
-    } finally { setSaving(false) }
+    } catch (e) { console.error(e) }finally { setSaving(false) }
   }
 
   const generatePBC = async () => {
