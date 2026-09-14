@@ -137,18 +137,20 @@ export default function ControlsPage() {
         <div className="max-w-7xl mx-auto px-4 pb-3 flex gap-3 flex-wrap items-center">
           {/* Framework multi-select */}
           <div className="flex gap-1">
-            {FRAMEWORKS.map(fw => (
-              <button key={fw} onClick={() => {
-                setSelectedFws(prev =>
-                  prev.includes(fw) ? prev.filter(f => f !== fw) : [...prev, fw]
-                )
-              }}
-               const cls1 = selectedFws.includes(fw) ? (FW_COLORS[fw] || 'bg-slate-100 text-slate-700') + ' border-transparent' : 'bg-white border-slate-300 text-slate-400' }
-                className={"text-xs px-2 py-1 rounded-full border font-medium transition " + cls1}
-              >
-                {fw}
-              </button>
-            ))}
+            {FRAMEWORKS.map(fw => {
+              const cls = selectedFws.includes(fw) ? (FW_COLORS[fw] || 'bg-slate-100 text-slate-700') + ' border-transparent' : 'bg-white border-slate-300 text-slate-400'
+              return (
+                <button key={fw} onClick={() => {
+                  setSelectedFws(prev =>
+                    prev.includes(fw) ? prev.filter(f => f !== fw) : [...prev, fw]
+                  )
+                }}
+                  className={"text-xs px-2 py-1 rounded-full border font-medium transition " + cls}
+                >
+                  {fw}
+                </button>
+              )
+            })}
           </div>
 
           <select value={domain} onChange={e => setDomain(e.target.value)}
@@ -273,13 +275,15 @@ export default function ControlsPage() {
               <h3 className="font-bold text-slate-900 mb-3">🤖 AI Control Assistant</h3>
 
               <div className="flex gap-2 mb-3">
-                {(['gap', 'draft'] as AIMode[]).map(m => (
-                  <button key={m} onClick={() => setAiMode(m)}
-                   const cls2 = aiMode === m ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }
-                    className={"flex-1 py-1.5 text-xs font-medium rounded-lg transition capitalize " + cls2}>
-                    {m === 'gap' ? '🔍 Gap Check' : '📝 Draft Control'}
-                  </button>
-                ))}
+                {(['gap', 'draft'] as AIMode[]).map(m => {
+                  const cls = aiMode === m ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  return (
+                    <button key={m} onClick={() => setAiMode(m)}
+                      className={"flex-1 py-1.5 text-xs font-medium rounded-lg transition capitalize " + cls}>
+                      {m === 'gap' ? '🔍 Gap Check' : '📝 Draft Control'}
+                    </button>
+                  )
+                })}
               </div>
 
               <select value={aiFramework} onChange={e => setAiFramework(e.target.value)}

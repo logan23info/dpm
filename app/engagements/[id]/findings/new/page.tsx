@@ -87,17 +87,25 @@ export default function NewFindingPage() {
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Severity</label>
             <div className="grid grid-cols-4 gap-3">
-              {["low", "medium", "high", "critical"].map(s => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setForm(prev => ({ ...prev, severity: s }))}
-                 const cls1 = form.severity === s ? s === "critical" ? "bg-red-600 border-red-600 text-white" : s === "high" ? "bg-orange-500 border-orange-500 text-white" : s === "medium" ? "bg-amber-500 border-amber-500 text-white" : "bg-blue-500 border-blue-500 text-white" : "bg-white border-slate-300 text-slate-700 hover:border-amber-400" }
-                  className={"py-2 rounded-lg border text-sm font-medium capitalize transition " + cls1}
-                >
-                  {s}
-                </button>
-              ))}
+              {["low", "medium", "high", "critical"].map(s => {
+                const active = form.severity === s
+                const cls = active
+                  ? (s === "critical" ? "bg-red-600 border-red-600 text-white"
+                    : s === "high"    ? "bg-orange-500 border-orange-500 text-white"
+                    : s === "medium"  ? "bg-amber-500 border-amber-500 text-white"
+                    : "bg-blue-500 border-blue-500 text-white")
+                  : "bg-white border-slate-300 text-slate-700 hover:border-amber-400"
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, severity: s }))}
+                    className={"py-2 rounded-lg border text-sm font-medium capitalize transition " + cls}
+                  >
+                    {s}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

@@ -311,7 +311,9 @@ export default function AnalyticsDashboard({ engagementId }: { engagementId: str
                 </tr>
               </thead>
               <tbody>
-                {riskByDomain.map((d, i) => (
+                {riskByDomain.map((d, i) => {
+                  const cls = d.effectiveness >= 80 ? "bg-green-100 text-green-800" : d.effectiveness >= 60 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"
+                  return (
                   <tr key={i} className="border-b border-slate-100">
                     <td className="py-3 font-medium text-slate-900">{d.domain}</td>
                     <td className="py-3 text-center text-slate-600">{d.total}</td>
@@ -333,13 +335,13 @@ export default function AnalyticsDashboard({ engagementId }: { engagementId: str
                       </div>
                     </td>
                     <td className="py-3 text-center">
-                      const cls1 = d.effectiveness >= 80 ? "bg-green-100 text-green-800" : d.effectiveness >= 60 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800" }
-                      <span className={"text-xs px-2 py-1 rounded-full font-medium " + cls1}>
+                      <span className={"text-xs px-2 py-1 rounded-full font-medium " + cls}>
                         {d.effectiveness >= 80 ? "Strong" : d.effectiveness >= 60 ? "Moderate" : "Weak"}
                       </span>
                     </td>
                   </tr>
-                ))}
+                )
+                })}
               </tbody>
             </table>
           ) : (

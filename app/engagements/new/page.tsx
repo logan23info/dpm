@@ -99,17 +99,19 @@ export default function NewEngagementPage() {
               Frameworks <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {FRAMEWORKS.map(fw => (
-                <button
-                  key={fw}
-                  type="button"
-                  onClick={() => toggleFramework(fw)}
-                 const cls1 = form.frameworks.includes(fw) ? "bg-amber-500 border-amber-500 text-white" : "bg-white border-slate-300 text-slate-700 hover:border-amber-400" }
-                  className={"px-4 py-2 rounded-lg border text-sm font-medium transition " + cls1}
-                >
-                  {fw}
-                </button>
-              ))}
+              {FRAMEWORKS.map(fw => {
+                const cls = form.frameworks.includes(fw) ? "bg-amber-500 border-amber-500 text-white" : "bg-white border-slate-300 text-slate-700 hover:border-amber-400"
+                return (
+                  <button
+                    key={fw}
+                    type="button"
+                    onClick={() => toggleFramework(fw)}
+                    className={"px-4 py-2 rounded-lg border text-sm font-medium transition " + cls}
+                  >
+                    {fw}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
