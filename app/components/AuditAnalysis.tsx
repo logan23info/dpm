@@ -197,8 +197,7 @@ export default function AuditAnalysis({
         setAuditorNote('')
       }
     } catch (e) { console.error(e) } finally {
-      setDispositionSaving(false)
-    }
+      setDispositionSaving(false) }
   }
 
   const cfg = MODE_CONFIG[mode]
@@ -265,9 +264,9 @@ export default function AuditAnalysis({
             {(['advisory', 'assurance'] as const).map(m => {
               const c = MODE_CONFIG[m]
               const isActive = mode === m
+              const cls1 = isActive ? (c.btnBg + ' text-white border-transparent') : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400'
               return (
                 <button key={m} onClick={() => { setMode(m); setResult(null); setShowDisposition(false) }}
-                 const cls1 = isActive ? `${c.btnBg} text-white border-transparent` : 'bg-white border-slate-300 text-slate-600 hover:border-slate-400' }
                   className={"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition " + cls1}
                 >
                   <span>{c.icon}</span>
@@ -336,9 +335,9 @@ export default function AuditAnalysis({
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {(['accepted', 'modified', 'rejected'] as const).map(d => {
                     const dc = DISPOSITION_CONFIG[d]
+                    const cls2 = disposition === d ? (dc.color + ' border-current') : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'
                     return (
                       <button key={d} onClick={() => setDisposition(d)}
-                       const cls2 = disposition === d ? `${dc.color} border-current` : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400' }
                         className={"p-3 rounded-lg border-2 text-sm font-medium text-center transition " + cls2}
                       >
                         <div className="text-lg mb-1">{dc.icon}</div>
