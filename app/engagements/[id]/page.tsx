@@ -79,9 +79,9 @@ export default function EngagementPage() {
   const fetchAll = async () => {
     try {
       const [engRes, wpRes, findRes] = await Promise.all([
-        fetch(`/api/engagements/${id}`),
-        fetch(`/api/engagements/${id}/workpapers`),
-        fetch(`/api/engagements/${id}/findings`),
+        fetch(`/api/engagements/${id}`, { cache: 'no-store' }),
+        fetch(`/api/engagements/${id}/workpapers`, { cache: 'no-store' }),
+        fetch(`/api/engagements/${id}/findings`, { cache: 'no-store' }),
       ])
       if (engRes.ok) setEngagement(await engRes.json())
       if (wpRes.ok) setWorkpapers(await wpRes.json())

@@ -44,6 +44,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   try {
     const existing = await sql`SELECT title FROM engagements WHERE id = ${params.id}`
     if (existing.rows.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    // Cascade delete children
+    await sql`DELETE FROM evidence WHERE workpaper_id IN (SELECT id FROM workpapers WHERE engagement_id = ${params.id})`
+    await sql`DELETE FROM comments WHERE workpaper_id IN (SELECT id FROM workpapers WHERE engagement_id = ${params.id})`
+    await sql`DELETE FROM workpaper_versions WHERE workpaper_id IN (SELECT id FROM workpapers WHERE engagement_id = ${params.id})`
+    await sql`DELETE FROM findings WHERE engagement_id = ${params.id}`
+    await sql`DELETE FROM workpapers WHERE engagement_id = ${params.id}`
     await sql`DELETE FROM engagements WHERE id = ${params.id}`
     return NextResponse.json({ ok: true, deleted: (existing.rows[0] as any).title })
   } catch (e: any) {
